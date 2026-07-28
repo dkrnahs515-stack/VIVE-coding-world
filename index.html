@@ -1,332 +1,1083 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>웹 라이어 게임</title>
-    <style>
-        :root {
-            --primary-color: #4A90E2;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-        }
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        #app {
-            background-color: var(--card-bg);
-            width: 100%;
-            max-width: 500px;
-            min-height: 600px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            padding: 30px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .screen {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .screen.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        h1, h2, h3 { text-align: center; color: var(--primary-color); }
-        .rules-box {
-            background-color: #f0f4f8;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        button:hover { background-color: #357ABD; }
-        button.secondary {
-            background-color: #e2e8f0;
-            color: #4a5568;
-        }
-        button.secondary:hover { background-color: #cbd5e0; }
-        
-        .role-card {
-            font-size: 2rem;
-            text-align: center;
-            padding: 40px 20px;
-            background-color: #edf2f7;
-            border-radius: 12px;
-            margin: 20px 0;
-            font-weight: bold;
-            color: #2b6cb0;
-        }
-        .input-group { margin-bottom: 15px; }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .input-group input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .vote-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .result-highlight {
-            font-size: 1.5rem;
-            color: #e53e3e;
-            text-align: center;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5인 라이어 게임</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #5b5bd6;
+      --primary-dark: #4141aa;
+      --danger: #e84b5f;
+      --success: #2eae72;
+      --text: #202334;
+      --sub: #70758a;
+      --line: #e1e5ef;
+      --shadow: 0 14px 40px rgba(50, 55, 90, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #e6e8ff 0, transparent 35%),
+        radial-gradient(circle at bottom right, #dff7eb 0, transparent 35%),
+        var(--bg);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(720px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 6vw, 44px);
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--sub);
+    }
+
+    .card {
+      display: none;
+      padding: 26px;
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 24px;
+      background: rgba(255,255,255,.93);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .card.active {
+      display: block;
+      animation: fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 27px;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+    }
+
+    p,
+    li {
+      line-height: 1.65;
+    }
+
+    .rule-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: #f7f7ff;
+      border: 1px solid #e5e5ff;
+    }
+
+    .rule-box ol {
+      padding-left: 22px;
+      margin-bottom: 0;
+    }
+
+    .notice {
+      padding: 14px 16px;
+      border-left: 5px solid var(--primary);
+      border-radius: 12px;
+      background: #f2f2ff;
+      color: #48486c;
+      line-height: 1.55;
+    }
+
+    .form-group {
+      margin: 18px 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: white;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(91,91,214,.12);
+    }
+
+    .player-inputs {
+      display: grid;
+      gap: 10px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: white;
+      background: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: #eceef5;
+    }
+
+    .btn-danger {
+      color: white;
+      background: var(--danger);
+    }
+
+    .btn-success {
+      color: white;
+      background: var(--success);
+    }
+
+    .full {
+      width: 100%;
+    }
+
+    .role-panel {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #f8f8ff, #eef0ff);
+      border: 2px dashed #c9cdfa;
+    }
+
+    .role-panel h3 {
+      font-size: 30px;
+      margin: 0 0 12px;
+    }
+
+    .secret-word {
+      margin: 14px 0;
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--primary);
+      word-break: keep-all;
+    }
+
+    .word-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+
+    .word-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 22px;
+      border: 1px solid #dfe2ee;
+      background: #f7f8fc;
+      box-shadow: 0 10px 24px rgba(40, 45, 80, .13);
+    }
+
+    .word-text-area {
+      min-width: 180px;
+    }
+
+    .liar-text {
+      color: var(--danger);
+    }
+
+    .turn-order {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .turn-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      background: #f7f8fc;
+      border: 1px solid var(--line);
+    }
+
+    .turn-number {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      border-radius: 50%;
+      color: white;
+      background: var(--primary);
+      font-weight: 900;
+    }
+
+    .timer {
+      padding: 22px;
+      margin: 18px 0;
+      border-radius: 20px;
+      text-align: center;
+      background: #1f2233;
+      color: white;
+    }
+
+    .timer-number {
+      display: block;
+      font-size: 56px;
+      font-weight: 900;
+      margin: 8px 0;
+    }
+
+    .vote-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .vote-btn {
+      min-height: 70px;
+      padding: 12px;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      background: #f1f3f8;
+      font-weight: 800;
+    }
+
+    .vote-btn.selected {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: #eeeeff;
+    }
+
+    .result-box {
+      padding: 22px;
+      margin: 18px 0;
+      border-radius: 20px;
+      text-align: center;
+      background: #f8f9fd;
+      border: 1px solid var(--line);
+    }
+
+    .result-main {
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 12px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      background: #ececff;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        padding: 20px;
+        border-radius: 19px;
+      }
+
+      .vote-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      .button-row .btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <header class="header">
+      <h1>🕵️ 5인 라이어 게임</h1>
+      <p>한 기기로 돌아가며 즐기는 음식·동물 추리 게임</p>
+    </header>
 
-<div id="app">
-    <!-- 화면 1: 게임 규칙 설명 -->
-    <div id="screen-intro" class="screen active">
-        <h1>🕵️ 웹 라이어 게임</h1>
-        <div class="rules-box">
-            <strong>게임 규칙 및 방법:</strong><br><br>
-            1. 총 5명의 플레이어가 참여하며, 이 중 1명은 <strong>'라이어(거짓말쟁이)'</strong>로 선정됩니다.<br>
-            2. 라이어를 제외한 4명의 시민에게는 공통된 <strong>'제시어'</strong>가 주어집니다. 라이어에게는 '라이어'라고만 표시됩니다.<br>
-            3. 순서대로 돌아가며 제시어에 대한 <strong>특징을 한 문장씩</strong> 말합니다.<br>
-            4. 시민들은 너무 직접적으로 말하면 라이어에게 정답을 들킬 수 있으니 <strong>적당히 모호하게</strong> 말해야 합니다.<br>
-            5. 라이어는 시민들의 설명을 듣고 <strong>제시어가 무엇인지 유추하여 아는 척</strong> 거짓말을 해야 합니다.<br>
-            6. 모든 설명이 끝나면, 가장 의심스러운 사람을 <strong>투표</strong>합니다.<br>
-            7. 투표로 라이어가 지목되면 시민 승리! (단, 라이어가 정답을 맞히면 라이어 역전승)<br>
-            8. 시민이 지목되면 라이어의 승리입니다!
+    <!-- 1. 게임 규칙 -->
+    <section id="rulesScreen" class="card active">
+      <span class="badge">게임 규칙</span>
+      <h2>라이어 게임이란?</h2>
+
+      <div class="rule-box">
+        <ol>
+          <li>5명 중 4명은 같은 <strong>제시어</strong>를 받습니다.</li>
+          <li>나머지 1명은 제시어를 모르는 <strong>라이어</strong>가 됩니다.</li>
+          <li>각자 제시어를 직접 말하지 않고, 특징만 한 문장으로 설명합니다.</li>
+          <li>모든 설명이 끝나면 가장 의심스러운 사람에게 투표합니다.</li>
+          <li>라이어를 잡으면 시민 팀이 유리하지만, 라이어가 제시어를 맞히면 라이어가 역전승합니다.</li>
+        </ol>
+      </div>
+
+      <p class="notice">
+        같은 휴대전화나 컴퓨터를 한 명씩 넘겨가며 역할을 확인하세요.
+        다른 사람이 화면을 보지 않도록 주의해야 합니다.
+      </p>
+
+      <div class="button-row">
+        <button class="btn btn-primary full" onclick="showScreen('setupScreen')">
+          게임 시작하기
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. 게임 설정 -->
+    <section id="setupScreen" class="card">
+      <span class="badge">게임 설정</span>
+      <h2>참가자 이름을 입력하세요</h2>
+
+      <p class="notice">
+        게임을 시작할 때마다 음식, 동물, 장소, 직업, 물건, 스포츠, 문화 등
+        <strong>다양한 분야에서 제시어가 자동으로 무작위 선정</strong>됩니다.
+      </p>
+
+      <div class="form-group">
+        <label>참가자 5명</label>
+        <div class="player-inputs">
+          <input class="player-name" value="1번 참가자" maxlength="12" />
+          <input class="player-name" value="2번 참가자" maxlength="12" />
+          <input class="player-name" value="3번 참가자" maxlength="12" />
+          <input class="player-name" value="4번 참가자" maxlength="12" />
+          <input class="player-name" value="5번 참가자" maxlength="12" />
         </div>
-        <button onclick="startGame()">게임 시작하기</button>
-    </div>
+      </div>
 
-    <!-- 화면 2: 주제 선택 -->
-    <div id="screen-topic" class="screen">
-        <h2>주제를 선택해주세요</h2>
-        <br>
-        <button onclick="selectTopic('food')">🍔 음식</button>
-        <button onclick="selectTopic('animal')">🦁 동물</button>
-    </div>
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="showScreen('rulesScreen')">규칙 보기</button>
+        <button class="btn btn-primary" onclick="startGame()">역할 정하기</button>
+      </div>
+    </section>
 
-    <!-- 화면 3: 정체 확인 -->
-    <div id="screen-role" class="screen">
-        <h2 id="role-turn-text">플레이어 1 차례입니다</h2>
-        <p style="text-align:center;">다른 사람이 보지 못하게 화면을 가리고 확인하세요.</p>
-        <button id="btn-show-role" onclick="showRole()">내 정체 확인하기</button>
-        
-        <div id="role-display" style="display:none;">
-            <div id="role-word" class="role-card">제시어</div>
-            <button id="btn-next-player" onclick="nextPlayer()">확인 완료 (다음 플레이어에게 전달)</button>
+    <!-- 3. 역할 확인 -->
+    <section id="roleScreen" class="card">
+      <span class="badge">비밀 역할 확인</span>
+      <h2 id="rolePlayerTitle">참가자 차례</h2>
+
+      <div id="roleCover" class="role-panel">
+        <div>
+          <h3>화면을 혼자 보고 있나요?</h3>
+          <p>아래 버튼을 눌러 자신의 역할을 확인하세요.</p>
+          <button class="btn btn-primary" onclick="revealRole()">내 역할 확인</button>
         </div>
-    </div>
+      </div>
 
-    <!-- 화면 4: 특징 말하기 (기록용) -->
-    <div id="screen-statement" class="screen">
-        <h2>제시어 특징 설명하기</h2>
-        <p style="font-size: 0.9rem; color: #666; text-align: center;">돌아가며 제시어의 특징을 적어주세요.</p>
-        <div id="statement-inputs"></div>
-        <button onclick="goToVote()" style="margin-top: 20px;">설명 완료! 투표하러 가기</button>
-    </div>
+      <div id="roleReveal" class="role-panel hidden"></div>
 
-    <!-- 화면 5: 투표하기 -->
-    <div id="screen-vote" class="screen">
-        <h2>라이어 투표</h2>
-        <p style="text-align:center;">누가 라이어일까요? 각자 의심되는 사람에게 투표하세요.</p>
-        <div id="vote-options"></div>
-        <button onclick="calculateVote()" style="margin-top: 20px; background-color: #e53e3e;">투표 결과 확인</button>
-    </div>
+      <div id="roleNextButtons" class="button-row hidden">
+        <button class="btn btn-primary full" onclick="nextRole()">확인 완료 · 다음 사람에게 넘기기</button>
+      </div>
+    </section>
 
-    <!-- 화면 6: 결과 화면 -->
-    <div id="screen-result" class="screen">
-        <h2>결과 발표</h2>
-        <div id="final-result-text" class="result-highlight"></div>
-        <div id="liar-word-reveal" style="text-align:center; font-size:1.2rem; margin-bottom: 20px;"></div>
-        <button onclick="location.reload()">새 게임하기</button>
-    </div>
-</div>
+    <!-- 4. 설명 순서 -->
+    <section id="discussionScreen" class="card">
+      <span class="badge">특징 설명</span>
+      <h2>제시어의 특징을 말해보세요</h2>
 
-<script>
-    // 게임 데이터
-    const words = {
-        food: ['피자', '떡볶이', '짜장면', '김밥', '치킨', '삼겹살', '초밥', '햄버거'],
-        animal: ['사자', '코끼리', '기린', '호랑이', '원숭이', '펭귄', '강아지', '고양이']
-    };
+      <p class="notice">
+        제시어 자체를 말하면 안 됩니다. 너무 정확하게 설명하면 라이어에게 정답을 알려줄 수 있고,
+        너무 애매하게 설명하면 본인이 라이어로 의심받을 수 있습니다.
+      </p>
 
-    const PLAYERS_COUNT = 5;
-    let players = ['플레이어 1', '플레이어 2', '플레이어 3', '플레이어 4', '플레이어 5'];
-    let liarIndex = -1;
-    let currentWord = '';
-    let currentPlayerIndex = 0;
+      <h3>발언 순서</h3>
+      <div id="turnOrder" class="turn-order"></div>
 
-    // 화면 전환 함수
+      <div class="timer">
+        <span>토론 시간</span>
+        <span id="timerNumber" class="timer-number">120</span>
+        <span>초</span>
+      </div>
+
+      <div class="button-row">
+        <button id="timerButton" class="btn btn-primary" onclick="toggleTimer()">타이머 시작</button>
+        <button class="btn btn-secondary" onclick="resetTimer()">초기화</button>
+        <button class="btn btn-danger" onclick="goToVote()">설명 종료 · 투표하기</button>
+      </div>
+    </section>
+
+    <!-- 5. 참가자별 비밀 투표 -->
+    <section id="voteScreen" class="card">
+      <span class="badge">개별 비밀 투표</span>
+      <h2 id="votePlayerTitle">투표할 참가자 차례</h2>
+
+      <div id="voteCover" class="role-panel">
+        <div>
+          <h3>다른 사람이 화면을 보지 않게 해주세요</h3>
+          <p>각 참가자가 한 명씩 화면을 넘겨받아 비밀투표합니다.</p>
+          <button class="btn btn-primary" onclick="openVoteBallot()">내 투표 시작</button>
+        </div>
+      </div>
+
+      <div id="voteBallot" class="hidden">
+        <p class="notice">본인을 제외하고 가장 라이어로 의심되는 사람 한 명을 선택하세요.</p>
+        <div id="voteGrid" class="vote-grid"></div>
+        <div class="button-row">
+          <button class="btn btn-primary full" onclick="submitIndividualVote()">이 사람에게 투표하기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 라이어 공개 및 추측 -->
+    <section id="liarGuessScreen" class="card">
+      <span class="badge">라이어 공개</span>
+      <h2>투표 결과</h2>
+
+      <div id="voteResultBox" class="result-box"></div>
+
+      <div id="guessArea">
+        <h3>라이어의 마지막 기회</h3>
+        <p>
+          라이어가 잡혔습니다. 라이어는 시민들이 설명한 내용을 바탕으로 제시어를 맞혀보세요.
+        </p>
+
+        <div class="form-group">
+          <label for="liarGuess">라이어가 추측한 제시어</label>
+          <input id="liarGuess" type="text" placeholder="제시어를 입력하세요" autocomplete="off" />
+        </div>
+
+        <button class="btn btn-primary full" onclick="checkLiarGuess()">제시어 확인</button>
+      </div>
+
+      <div id="instantResultArea" class="hidden">
+        <button class="btn btn-primary full" onclick="finishWithoutGuess()">최종 결과 보기</button>
+      </div>
+    </section>
+
+    <!-- 7. 최종 결과 -->
+    <section id="finalScreen" class="card">
+      <span class="badge">게임 종료</span>
+      <h2>최종 결과</h2>
+
+      <div id="finalResult" class="result-box"></div>
+
+      <div class="button-row">
+        <button class="btn btn-success full" onclick="restartGame()">한 판 더 하기</button>
+      </div>
+    </section>
+
+    <p class="footer-note">GitHub Pages에서 바로 실행할 수 있는 단일 HTML 게임</p>
+  </main>
+
+  <script>
+    // -----------------------------
+    // 제시어 목록
+    // 원하는 단어를 자유롭게 추가할 수 있습니다.
+    // -----------------------------
+    const wordPool = [
+      // 음식·간식
+      { theme: "먹거리", word: "김치찌개" }, { theme: "먹거리", word: "떡볶이" },
+      { theme: "먹거리", word: "비빔밥" }, { theme: "먹거리", word: "치킨" },
+      { theme: "먹거리", word: "피자" }, { theme: "먹거리", word: "초밥" },
+      { theme: "먹거리", word: "라면" }, { theme: "먹거리", word: "삼겹살" },
+      { theme: "먹거리", word: "붕어빵" }, { theme: "먹거리", word: "아이스크림" },
+
+      // 생물·자연
+      { theme: "생물", word: "강아지" }, { theme: "생물", word: "고양이" },
+      { theme: "생물", word: "호랑이" }, { theme: "생물", word: "코끼리" },
+      { theme: "생물", word: "펭귄" }, { theme: "생물", word: "돌고래" },
+      { theme: "생물", word: "문어" }, { theme: "생물", word: "독수리" },
+      { theme: "자연", word: "무지개" }, { theme: "자연", word: "화산" },
+      { theme: "자연", word: "폭포" }, { theme: "자연", word: "사막" },
+
+      // 장소
+      { theme: "장소", word: "학교" }, { theme: "장소", word: "놀이공원" },
+      { theme: "장소", word: "도서관" }, { theme: "장소", word: "공항" },
+      { theme: "장소", word: "수영장" }, { theme: "장소", word: "편의점" },
+      { theme: "장소", word: "영화관" }, { theme: "장소", word: "병원" },
+      { theme: "장소", word: "캠핑장" }, { theme: "장소", word: "지하철역" },
+
+      // 직업·인물
+      { theme: "직업", word: "소방관" }, { theme: "직업", word: "요리사" },
+      { theme: "직업", word: "교사" }, { theme: "직업", word: "경찰관" },
+      { theme: "직업", word: "축구선수" }, { theme: "직업", word: "의사" },
+      { theme: "직업", word: "유튜버" }, { theme: "직업", word: "우주비행사" },
+      { theme: "인물", word: "마법사" }, { theme: "인물", word: "탐정" },
+
+      // 물건·전자기기
+      { theme: "물건", word: "우산" }, { theme: "물건", word: "연필" },
+      { theme: "물건", word: "냉장고" }, { theme: "물건", word: "칫솔" },
+      { theme: "물건", word: "가방" }, { theme: "물건", word: "시계" },
+      { theme: "전자기기", word: "스마트폰" }, { theme: "전자기기", word: "노트북" },
+      { theme: "전자기기", word: "이어폰" }, { theme: "전자기기", word: "게임기" },
+
+      // 교통수단
+      { theme: "탈것", word: "자동차" }, { theme: "탈것", word: "자전거" },
+      { theme: "탈것", word: "비행기" }, { theme: "탈것", word: "기차" },
+      { theme: "탈것", word: "킥보드" }, { theme: "탈것", word: "잠수함" },
+      { theme: "탈것", word: "열기구" }, { theme: "탈것", word: "우주선" },
+
+      // 스포츠·놀이
+      { theme: "스포츠", word: "축구" }, { theme: "스포츠", word: "야구" },
+      { theme: "스포츠", word: "농구" }, { theme: "스포츠", word: "복싱" },
+      { theme: "스포츠", word: "양궁" }, { theme: "스포츠", word: "스키" },
+      { theme: "놀이", word: "숨바꼭질" }, { theme: "놀이", word: "보드게임" },
+      { theme: "놀이", word: "노래방" }, { theme: "놀이", word: "방탈출" },
+
+      // 문화·콘텐츠
+      { theme: "콘텐츠", word: "영화" }, { theme: "콘텐츠", word: "웹툰" },
+      { theme: "콘텐츠", word: "애니메이션" }, { theme: "콘텐츠", word: "드라마" },
+      { theme: "콘텐츠", word: "뮤지컬" }, { theme: "콘텐츠", word: "콘서트" },
+      { theme: "문화", word: "생일파티" }, { theme: "문화", word: "결혼식" },
+      { theme: "문화", word: "졸업식" }, { theme: "문화", word: "축제" },
+
+      // 행동·상황
+      { theme: "행동", word: "낮잠" }, { theme: "행동", word: "쇼핑" },
+      { theme: "행동", word: "여행" }, { theme: "행동", word: "요리" },
+      { theme: "행동", word: "사진촬영" }, { theme: "행동", word: "공부" },
+      { theme: "상황", word: "시험" }, { theme: "상황", word: "지각" },
+      { theme: "상황", word: "첫눈" }, { theme: "상황", word: "휴가" },
+
+      // 상상·판타지
+      { theme: "상상", word: "타임머신" }, { theme: "상상", word: "투명인간" },
+      { theme: "상상", word: "외계인" }, { theme: "상상", word: "로봇" },
+      { theme: "상상", word: "좀비" }, { theme: "상상", word: "드래곤" },
+      { theme: "상상", word: "보물지도" }, { theme: "상상", word: "비밀기지" },
+
+      // 일본 애니메이션
+      { theme: "일본 애니메이션", word: "원피스", icon: "🏴‍☠️" },
+      { theme: "일본 애니메이션", word: "나루토", icon: "🥷" },
+      { theme: "일본 애니메이션", word: "귀멸의 칼날", icon: "⚔️" },
+      { theme: "일본 애니메이션", word: "진격의 거인", icon: "🧱" },
+      { theme: "일본 애니메이션", word: "주술회전", icon: "🌀" },
+      { theme: "일본 애니메이션", word: "스파이 패밀리", icon: "🕵️" },
+      { theme: "일본 애니메이션", word: "포켓몬스터", icon: "⚡" },
+      { theme: "일본 애니메이션", word: "드래곤볼", icon: "🐉" },
+      { theme: "일본 애니메이션", word: "명탐정 코난", icon: "🔍" },
+      { theme: "일본 애니메이션", word: "하이큐", icon: "🏐" },
+      { theme: "일본 애니메이션", word: "슬램덩크", icon: "🏀" },
+      { theme: "일본 애니메이션", word: "나의 히어로 아카데미아", icon: "🦸" },
+      { theme: "일본 애니메이션", word: "체인소 맨", icon: "🪚" },
+      { theme: "일본 애니메이션", word: "최애의 아이", icon: "⭐" },
+      { theme: "일본 애니메이션", word: "도라에몽", icon: "🔔" },
+      { theme: "일본 애니메이션", word: "짱구는 못말려", icon: "🖍️" },
+      { theme: "일본 애니메이션", word: "센과 치히로의 행방불명", icon: "🐉" },
+      { theme: "일본 애니메이션", word: "이웃집 토토로", icon: "🌳" },
+      { theme: "일본 애니메이션", word: "너의 이름은", icon: "☄️" },
+      { theme: "일본 애니메이션", word: "강철의 연금술사", icon: "⚙️" }
+    ];
+
+    // -----------------------------
+    // 게임 상태
+    // -----------------------------
+    let players = [];
+    let liarIndex = 0;
+    let secretWord = "";
+    let selectedTheme = "";
+    let selectedIcon = "🎲";
+    let roleCheckIndex = 0;
+    let selectedVoteIndex = null;
+    let currentVoterIndex = 0;
+    let votes = [];
+    let accusedIndex = null;
+    let discussionOrder = [];
+
+    let timerSeconds = 120;
+    let timerId = null;
+    let timerRunning = false;
+
+    // 화면 전환
     function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
+      document.querySelectorAll(".card").forEach(card => {
+        card.classList.remove("active");
+      });
+
+      document.getElementById(screenId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    // 배열 섞기
+    function shuffleArray(array) {
+      const copied = [...array];
+
+      for (let i = copied.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+        [copied[i], copied[randomIndex]] = [copied[randomIndex], copied[i]];
+      }
+
+      return copied;
+    }
+
+    // 주제별 기본 그림 아이콘
+    function getThemeIcon(theme) {
+      const icons = {
+        "먹거리": "🍽️", "생물": "🐾", "자연": "🌿", "장소": "📍",
+        "직업": "🧑‍💼", "인물": "🧙", "물건": "📦", "전자기기": "💻",
+        "탈것": "🚗", "스포츠": "🏅", "놀이": "🎮", "콘텐츠": "🎬",
+        "문화": "🎉", "행동": "🏃", "상황": "💭", "상상": "✨",
+        "일본 애니메이션": "🎌"
+      };
+      return icons[theme] || "🎲";
+    }
+
+    // 외부 이미지 없이 카드형 이미지를 생성합니다.
+    function makeWordImage(word, theme, icon) {
+      const safeWord = String(word).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[ch]);
+      const safeTheme = String(theme).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[ch]);
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="360" height="360">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#eeeeff"/>
+              <stop offset="100%" stop-color="#ddf7eb"/>
+            </linearGradient>
+          </defs>
+          <rect width="360" height="360" rx="42" fill="url(#g)"/>
+          <circle cx="180" cy="135" r="82" fill="white" fill-opacity="0.82"/>
+          <text x="180" y="167" font-size="100" text-anchor="middle">${icon}</text>
+          <text x="180" y="260" font-size="28" font-weight="700" text-anchor="middle" fill="#30344f">${safeWord}</text>
+          <text x="180" y="302" font-size="20" text-anchor="middle" fill="#74798f">${safeTheme}</text>
+        </svg>`;
+
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    // 게임 시작
     function startGame() {
-        showScreen('screen-topic');
+      const nameInputs = [...document.querySelectorAll(".player-name")];
+      players = nameInputs.map((input, index) => {
+        const name = input.value.trim();
+        return name || `${index + 1}번 참가자`;
+      });
+
+      // 같은 이름 방지
+      const uniqueNames = new Set(players);
+      if (uniqueNames.size !== 5) {
+        alert("참가자 이름은 서로 다르게 입력해주세요.");
+        return;
+      }
+
+      // 음식 또는 동물 중 하나를 매 게임 자동으로 무작위 선택
+      // 직전 판과 같은 제시어가 나오지 않도록 후보를 걸러냅니다.
+      const previousWord = localStorage.getItem("liarGamePreviousWord");
+      const wordCandidates = wordPool.filter(item => item.word !== previousWord);
+      const selectedItem = wordCandidates[Math.floor(Math.random() * wordCandidates.length)];
+
+      secretWord = selectedItem.word;
+      selectedTheme = selectedItem.theme;
+      selectedIcon = selectedItem.icon || getThemeIcon(selectedItem.theme);
+      localStorage.setItem("liarGamePreviousWord", secretWord);
+
+      // 매 판 무작위로 정하되, 직전 판의 라이어는 연속으로 뽑히지 않게 합니다.
+      const previousLiar = Number(localStorage.getItem("liarGamePreviousLiar"));
+      const liarCandidates = [0, 1, 2, 3, 4].filter(index => index !== previousLiar);
+      liarIndex = liarCandidates[Math.floor(Math.random() * liarCandidates.length)];
+      localStorage.setItem("liarGamePreviousLiar", String(liarIndex));
+
+      // 설명 순서도 무작위로 섞기
+      discussionOrder = shuffleArray(
+        players.map((name, index) => ({ name, index }))
+      );
+
+      roleCheckIndex = 0;
+      selectedVoteIndex = null;
+      currentVoterIndex = 0;
+      votes = [];
+      accusedIndex = null;
+
+      prepareRoleScreen();
+      showScreen("roleScreen");
     }
 
-    function selectTopic(topic) {
-        // 단어 랜덤 선택
-        const wordList = words[topic];
-        currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-        
-        // 라이어 랜덤 선택 (0 ~ 4)
-        liarIndex = Math.floor(Math.random() * PLAYERS_COUNT);
-        
-        currentPlayerIndex = 0;
-        updateRoleScreen();
-        showScreen('screen-role');
+    // 역할 확인 화면 준비
+    function prepareRoleScreen() {
+      document.getElementById("rolePlayerTitle").textContent =
+        `${players[roleCheckIndex]} 님의 차례`;
+
+      document.getElementById("roleCover").classList.remove("hidden");
+      document.getElementById("roleReveal").classList.add("hidden");
+      document.getElementById("roleNextButtons").classList.add("hidden");
+      document.getElementById("roleReveal").innerHTML = "";
     }
 
-    function updateRoleScreen() {
-        document.getElementById('role-turn-text').innerText = `${players[currentPlayerIndex]} 차례입니다`;
-        document.getElementById('btn-show-role').style.display = 'block';
-        document.getElementById('role-display').style.display = 'none';
+    // 역할 공개
+    function revealRole() {
+      const isLiar = roleCheckIndex === liarIndex;
+      const categoryLabel = selectedTheme;
+
+      document.getElementById("roleCover").classList.add("hidden");
+      const revealBox = document.getElementById("roleReveal");
+      revealBox.classList.remove("hidden");
+
+      if (isLiar) {
+        revealBox.innerHTML = `
+          <div>
+            <h3 class="liar-text">당신은 라이어입니다!</h3>
+            <p>주제는 <strong>${categoryLabel}</strong>입니다.</p>
+            <p>다른 사람들의 설명을 듣고 제시어를 추리하세요.</p>
+          </div>
+        `;
+      } else {
+        const imageSrc = makeWordImage(secretWord, categoryLabel, selectedIcon);
+        revealBox.innerHTML = `
+          <div>
+            <h3>당신은 시민입니다.</h3>
+            <p>주제: <strong>${categoryLabel}</strong></p>
+            <div class="word-visual">
+              <img class="word-image" src="${imageSrc}" alt="${secretWord} 이미지" />
+              <div class="word-text-area">
+                <div class="secret-word">${secretWord}</div>
+              </div>
+            </div>
+            <p>제시어를 직접 말하지 말고 특징만 설명하세요.</p>
+          </div>
+        `;
+      }
+
+      document.getElementById("roleNextButtons").classList.remove("hidden");
     }
 
-    function showRole() {
-        document.getElementById('btn-show-role').style.display = 'none';
-        document.getElementById('role-display').style.display = 'block';
-        
-        const roleCard = document.getElementById('role-word');
-        if (currentPlayerIndex === liarIndex) {
-            roleCard.innerText = "당신은 [라이어] 입니다!";
-            roleCard.style.color = "#e53e3e";
-        } else {
-            roleCard.innerText = `제시어: [ ${currentWord} ]`;
-            roleCard.style.color = "#2b6cb0";
+    // 다음 참가자의 역할 확인
+    function nextRole() {
+      roleCheckIndex++;
+
+      if (roleCheckIndex < players.length) {
+        prepareRoleScreen();
+        return;
+      }
+
+      renderDiscussionOrder();
+      resetTimer();
+      showScreen("discussionScreen");
+    }
+
+    // 발언 순서 표시
+    function renderDiscussionOrder() {
+      const orderBox = document.getElementById("turnOrder");
+      orderBox.innerHTML = "";
+
+      discussionOrder.forEach((player, index) => {
+        const item = document.createElement("div");
+        item.className = "turn-item";
+        item.innerHTML = `
+          <span class="turn-number">${index + 1}</span>
+          <strong>${player.name}</strong>
+        `;
+        orderBox.appendChild(item);
+      });
+    }
+
+    // 타이머 시작·일시정지
+    function toggleTimer() {
+      const timerButton = document.getElementById("timerButton");
+
+      if (timerRunning) {
+        clearInterval(timerId);
+        timerRunning = false;
+        timerButton.textContent = "타이머 계속";
+        return;
+      }
+
+      if (timerSeconds <= 0) {
+        timerSeconds = 120;
+        updateTimerDisplay();
+      }
+
+      timerRunning = true;
+      timerButton.textContent = "일시정지";
+
+      timerId = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+
+        if (timerSeconds <= 0) {
+          clearInterval(timerId);
+          timerRunning = false;
+          timerButton.textContent = "시간 종료";
+
+          if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+          }
+
+          alert("토론 시간이 끝났습니다. 이제 투표하세요!");
         }
+      }, 1000);
     }
 
-    function nextPlayer() {
-        currentPlayerIndex++;
-        if (currentPlayerIndex < PLAYERS_COUNT) {
-            updateRoleScreen();
-        } else {
-            setupStatementScreen();
-            showScreen('screen-statement');
-        }
+    // 타이머 초기화
+    function resetTimer() {
+      clearInterval(timerId);
+      timerSeconds = 120;
+      timerRunning = false;
+      updateTimerDisplay();
+      document.getElementById("timerButton").textContent = "타이머 시작";
     }
 
-    function setupStatementScreen() {
-        const container = document.getElementById('statement-inputs');
-        container.innerHTML = '';
-        players.forEach((player, index) => {
-            container.innerHTML += `
-                <div class="input-group">
-                    <label>${player}의 설명:</label>
-                    <input type="text" id="statement-${index}" placeholder="특징을 입력하세요" autocomplete="off">
-                </div>
-            `;
-        });
+    function updateTimerDisplay() {
+      document.getElementById("timerNumber").textContent = timerSeconds;
     }
 
+    // 투표 화면으로 이동
     function goToVote() {
-        const container = document.getElementById('vote-options');
-        container.innerHTML = '';
-        
-        // 각 플레이어별로 누구를 투표하는지 선택
-        players.forEach((voter, voterIdx) => {
-            let optionsHTML = `<option value="-1">선택 안함</option>`;
-            players.forEach((suspect, suspectIdx) => {
-                if(voterIdx !== suspectIdx) {
-                    optionsHTML += `<option value="${suspectIdx}">${suspect}</option>`;
-                }
-            });
-
-            container.innerHTML += `
-                <div class="vote-row">
-                    <strong>${voter}</strong>의 지목: 
-                    <select id="vote-${voterIdx}">
-                        ${optionsHTML}
-                    </select>
-                </div>
-            `;
-        });
-        showScreen('screen-vote');
+      clearInterval(timerId);
+      timerRunning = false;
+      currentVoterIndex = 0;
+      votes = [];
+      prepareIndividualVote();
+      showScreen("voteScreen");
     }
 
-    function calculateVote() {
-        let votesCount = [0, 0, 0, 0, 0];
-        
-        // 투표 집계
-        for(let i = 0; i < PLAYERS_COUNT; i++) {
-            const select = document.getElementById(`vote-${i}`);
-            const votedFor = parseInt(select.value);
-            if(votedFor !== -1) {
-                votesCount[votedFor]++;
-            }
-        }
-
-        // 최다 득표자 찾기
-        let maxVotes = 0;
-        let mostVotedPlayers = [];
-        
-        for(let i = 0; i < PLAYERS_COUNT; i++) {
-            if(votesCount[i] > maxVotes) {
-                maxVotes = votesCount[i];
-                mostVotedPlayers = [i];
-            } else if (votesCount[i] === maxVotes && maxVotes > 0) {
-                mostVotedPlayers.push(i);
-            }
-        }
-
-        const resultText = document.getElementById('final-result-text');
-        const revealText = document.getElementById('liar-word-reveal');
-        revealText.innerHTML = `정답 제시어는 <strong>[ ${currentWord} ]</strong> 였습니다.<br>실제 라이어는 <strong>[ ${players[liarIndex]} ]</strong> 입니다!`;
-
-        if (mostVotedPlayers.length === 1) {
-            const eliminatedIdx = mostVotedPlayers[0];
-            if (eliminatedIdx === liarIndex) {
-                resultText.innerText = `🎉 시민 승리! 라이어 검거 성공! 🎉`;
-                resultText.style.color = "#2b6cb0";
-                revealText.innerHTML += `<br><br><span style="color:#e53e3e; font-size:0.9rem;">라이어는 마지막으로 제시어를 맞춰 역전승을 노려보세요!</span>`;
-            } else {
-                resultText.innerText = `💀 라이어 승리! 무고한 시민(${players[eliminatedIdx]})이 지목되었습니다.`;
-            }
-        } else if (mostVotedPlayers.length > 1) {
-            resultText.innerText = `💀 동률 발생! 라이어(${players[liarIndex]}) 검거에 실패했습니다. (라이어 승리)`;
-        } else {
-            resultText.innerText = `💀 아무도 투표를 하지 않았습니다! (라이어 승리)`;
-        }
-
-        showScreen('screen-result');
+    // 현재 투표자 안내 화면 준비
+    function prepareIndividualVote() {
+      selectedVoteIndex = null;
+      document.getElementById("votePlayerTitle").textContent =
+        `${players[currentVoterIndex]} 님의 투표 차례`;
+      document.getElementById("voteCover").classList.remove("hidden");
+      document.getElementById("voteBallot").classList.add("hidden");
+      document.getElementById("voteGrid").innerHTML = "";
     }
-</script>
 
+    // 개인 투표용 선택지 열기
+    function openVoteBallot() {
+      document.getElementById("voteCover").classList.add("hidden");
+      document.getElementById("voteBallot").classList.remove("hidden");
+      renderVoteButtons();
+    }
+
+    // 현재 투표자를 제외한 후보 버튼 만들기
+    function renderVoteButtons() {
+      const voteGrid = document.getElementById("voteGrid");
+      voteGrid.innerHTML = "";
+      selectedVoteIndex = null;
+
+      players.forEach((name, index) => {
+        if (index === currentVoterIndex) return;
+
+        const button = document.createElement("button");
+        button.className = "vote-btn";
+        button.textContent = name;
+        button.onclick = () => selectVote(index, button);
+        voteGrid.appendChild(button);
+      });
+    }
+
+    // 투표 대상 선택
+    function selectVote(index, clickedButton) {
+      selectedVoteIndex = index;
+
+      document.querySelectorAll(".vote-btn").forEach(button => {
+        button.classList.remove("selected");
+      });
+
+      clickedButton.classList.add("selected");
+    }
+
+    // 참가자 한 명의 비밀투표 저장
+    function submitIndividualVote() {
+      if (selectedVoteIndex === null) {
+        alert("라이어로 의심되는 참가자를 선택해주세요.");
+        return;
+      }
+
+      votes.push(selectedVoteIndex);
+      currentVoterIndex++;
+
+      if (currentVoterIndex < players.length) {
+        prepareIndividualVote();
+        return;
+      }
+
+      calculateVoteResult();
+    }
+
+    // 5명의 투표를 집계해 최다 득표자 결정
+    function calculateVoteResult() {
+      const voteCounts = Array(players.length).fill(0);
+      votes.forEach(index => voteCounts[index]++);
+
+      const maxVotes = Math.max(...voteCounts);
+      const topCandidates = voteCounts
+        .map((count, index) => ({ count, index }))
+        .filter(item => item.count === maxVotes)
+        .map(item => item.index);
+
+      // 최다 득표자가 여러 명이면 전체 재투표
+      if (topCandidates.length > 1) {
+        const tiedNames = topCandidates.map(index => players[index]).join(", ");
+        alert(`동점입니다. 다시 투표합니다.\n동점 후보: ${tiedNames}`);
+        currentVoterIndex = 0;
+        votes = [];
+        prepareIndividualVote();
+        return;
+      }
+
+      accusedIndex = topCandidates[0];
+      showVoteResult(voteCounts);
+    }
+
+    // 투표 결과와 실제 라이어 비교
+    function showVoteResult(voteCounts) {
+      const caughtLiar = accusedIndex === liarIndex;
+      const resultBox = document.getElementById("voteResultBox");
+      const guessArea = document.getElementById("guessArea");
+      const instantArea = document.getElementById("instantResultArea");
+      const voteSummary = players
+        .map((name, index) => `${name} ${voteCounts[index]}표`)
+        .join(" · ");
+
+      if (caughtLiar) {
+        resultBox.innerHTML = `
+          <div class="result-main">🎯 라이어를 찾아냈습니다!</div>
+          <p><strong>${players[accusedIndex]}</strong> 님이 ${voteCounts[accusedIndex]}표로 지목되었고 실제 라이어입니다.</p>
+          <p>${voteSummary}</p>
+        `;
+
+        guessArea.classList.remove("hidden");
+        instantArea.classList.add("hidden");
+        document.getElementById("liarGuess").value = "";
+      } else {
+        resultBox.innerHTML = `
+          <div class="result-main">😈 라이어 검거 실패!</div>
+          <p>최다 득표자는 <strong>${players[accusedIndex]}</strong> 님이지만, 실제 라이어는 <strong>${players[liarIndex]}</strong> 님입니다.</p>
+          <p>${voteSummary}</p>
+        `;
+
+        guessArea.classList.add("hidden");
+        instantArea.classList.remove("hidden");
+      }
+
+      showScreen("liarGuessScreen");
+    }
+
+    // 라이어 제시어 추측 확인
+    function checkLiarGuess() {
+      const guess = document.getElementById("liarGuess").value.trim();
+
+      if (!guess) {
+        alert("라이어가 추측한 제시어를 입력해주세요.");
+        return;
+      }
+
+      const normalizedGuess = guess.replace(/\s/g, "").toLowerCase();
+      const normalizedAnswer = secretWord.replace(/\s/g, "").toLowerCase();
+      const guessedCorrectly = normalizedGuess === normalizedAnswer;
+
+      if (guessedCorrectly) {
+        showFinalResult(
+          "😈 라이어 팀 승리!",
+          `${players[liarIndex]} 님이 라이어로 지목되었지만 제시어 <strong>${secretWord}</strong>를 맞혔습니다.`
+        );
+      } else {
+        showFinalResult(
+          "🎉 시민 팀 승리!",
+          `라이어의 추측은 <strong>${guess}</strong>였고, 실제 제시어는 <strong>${secretWord}</strong>였습니다.`
+        );
+      }
+    }
+
+    // 라이어를 못 잡았을 때 결과
+    function finishWithoutGuess() {
+      showFinalResult(
+        "😈 라이어 팀 승리!",
+        `라이어는 <strong>${players[liarIndex]}</strong> 님이었고, 제시어는 <strong>${secretWord}</strong>였습니다.`
+      );
+    }
+
+    // 최종 결과 출력
+    function showFinalResult(title, description) {
+      document.getElementById("finalResult").innerHTML = `
+        <div class="result-main">${title}</div>
+        <p>${description}</p>
+        <p>
+          이번 판 분야: <strong>${selectedTheme}</strong>
+        </p>
+      `;
+
+      showScreen("finalScreen");
+    }
+
+    // 다시 시작
+    function restartGame() {
+      clearInterval(timerId);
+      timerRunning = false;
+      showScreen("setupScreen");
+    }
+  </script>
 </body>
 </html>

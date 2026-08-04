@@ -16,6 +16,7 @@ HTML, CSS, JavaScript로 제작된 게임을 한곳에서 선택해 플레이할
 | 🤥 **LIAR GAME** | 추리·파티 | 제시어를 모르는 라이어를 찾아내는 3~8인용 게임. 동점 재투표와 라이어 역전승 지원 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/liar/) |
 | ⚔️ **ENHANCE SWORD** | 확률·성장 | 골드를 모아 검을 강화하고 전설의 검에 도전하는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/sword/) |
 | ⚡ **NEON DASH** | 액션·러닝 | 자동으로 달리는 네온 큐브를 점프시켜 장애물을 피하고 완주하는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/geometry_dash/) |
+| 🪜 **INFINITE STAIRS** | 순발력·액션 | 300초 동안 방향을 판단하며 끝없이 이어지는 계단을 올라가는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/infinite_stairs/) |
 | 🏃 **VIBE ESCAPE** | 액션·대탈출 | 캐릭터를 선택하고 50개 스테이지와 보스를 돌파하는 게임 | [플레이](https://dkrnahs515-stack.github.io/gsyouth-exit-/) |
 
 > **VIBE ESCAPE**는 별도의 GitHub Pages 프로젝트로 운영되며, VIVE Coding World 메인 아케이드에서 연결됩니다.
@@ -42,7 +43,9 @@ VIVE-coding-world/
    │  └─ index.html
    ├─ sword/
    │  └─ index.html
-   └─ geometry_dash/
+   ├─ geometry_dash/
+   │  └─ index.html
+   └─ infinite_stairs/
       └─ index.html
 ```
 

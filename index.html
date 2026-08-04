@@ -3,70 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Hub - 통합 미니게임 천국</title>
-    <link rel="stylesheet" href="style.css">
+    <title>VIVE Coding World - 미니게임 아케이드</title>
+    <!-- 구글 폰트 (네온/사이버펑크 스타일에 어울림) -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0d15;
+            --text-color: #ffffff;
+            --neon-primary: #00f0ff; /* 청록색 네온 */
+            --neon-secondary: #ff0055; /* 핑크색 네온 */
+            --card-bg: #161625;
+            --border-color: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* 텍스트 선택 방지 */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            margin-top: 60px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        header p.brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--neon-primary);
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px var(--neon-primary);
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 10px var(--neon-primary), 0 0 20px var(--neon-primary), 0 0 30px var(--neon-primary);
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            font-weight: 400;
+        }
+
+        /* 게임 리스트 컨테이너 */
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            margin-bottom: 50px;
+        }
+
+        /* 게임 선택 카드 스타일 */
+        .game-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 18px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 220px; /* 카드 높이 통일 */
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 카드 호버 효과 (네온 Primary) */
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-primary);
+            box-shadow: 0 10px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        /* 특정 카드에 다른 네온 색상을 주고 싶을 때 (.secondary 클래스 사용) */
+        .game-card.secondary:hover {
+            border-color: var(--neon-secondary);
+            box-shadow: 0 10px 20px rgba(255, 0, 85, 0.3);
+        }
+
+        .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: white;
+        }
+
+        .game-desc {
+            font-size: 0.95rem;
+            color: #bbb;
+            margin-bottom: 20px;
+            flex-grow: 1; /* 설명 부문이 남은 공간 채움 */
+            line-height: 1.5;
+        }
+
+        .play-btn {
+            background: transparent;
+            border: 1px solid var(--neon-primary);
+            color: var(--neon-primary);
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .play-btn {
+            background-color: var(--neon-primary);
+            color: #000;
+            box-shadow: 0 0 10px var(--neon-primary);
+        }
+        
+        /* secondary 색상 버튼 스타일 */
+        .game-card.secondary .play-btn {
+            border-color: var(--neon-secondary);
+            color: var(--neon-secondary);
+        }
+        .game-card.secondary:hover .play-btn {
+            background-color: var(--neon-secondary);
+            color: #fff;
+            box-shadow: 0 0 10px var(--neon-secondary);
+        }
+
+        footer {
+            margin-top: auto; /* 하단 고정 */
+            padding: 25px;
+            color: #555;
+            font-size: 0.85rem;
+            border-top: 1px solid #222;
+            width: 100%;
+            text-align: center;
+        }
+        
+        footer a {
+            color: #777;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: var(--neon-primary);
+        }
+    </style>
 </head>
 <body>
-    <div class="portal-container">
-        <!-- 1. 메인 게임 선택 메뉴 화면 -->
-        <main id="menuView" class="view active">
-            <header class="portal-header">
-                <p class="subtitle">HTML5 CANVAS & WEB AUDIO</p>
-                <h1>🕹️ ARCADE HUB</h1>
-                <p class="description">플레이하고 싶은 게임을 선택하세요!</p>
-            </header>
 
-            <section class="game-grid">
-                <!-- 게임 카드 1 -->
-                <div class="game-card" onclick="launchGame('games/sword.html', '전설의 검 강화하기')">
-                    <div class="card-icon">⚔️</div>
-                    <div class="card-info">
-                        <h3>전설의 검 강화하기</h3>
-                        <p>강화, 판매, 리스크 관리 RPG</p>
-                    </div>
-                </div>
+    <header>
+        <p class="brand">YOUR MINI-GAME PORTAL</p>
+        <h1>VIVE Coding World</h1>
+        <div class="subtitle">직접 제작한 웹 기반 미니게임 컬렉션</div>
+    </header>
 
-                <!-- 게임 카드 2 -->
-                <div class="game-card" onclick="launchGame('games/wave.html', '네온 웨이브 서바이벌')">
-                    <div class="card-icon">👾</div>
-                    <div class="card-info">
-                        <h3>네온 웨이브 서바이벌</h3>
-                        <p>WASD + Space 2D 탑뷰 슈팅</p>
-                    </div>
-                </div>
-
-                <!-- 게임 카드 3 -->
-                <div class="game-card" onclick="launchGame('games/stairs.html', '무한의 계단')">
-                    <div class="card-icon">🪜</div>
-                    <div class="card-info">
-                        <h3>무한의 계단</h3>
-                        <p>300초 무한 계단 오르기 액션</p>
-                    </div>
-                </div>
-
-                <!-- 게임 카드 4 -->
-                <div class="game-card" onclick="launchGame('games/dash.html', '네온 큐브 대시')">
-                    <div class="card-icon">⚡</div>
-                    <div class="card-info">
-                        <h3>네온 큐브 대시</h3>
-                        <p>스테이지별 지오메트리 점프 러너</p>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- 2. 게임 실제 실행 구역 (Iframe 탑재) -->
-        <section id="gameView" class="view">
-            <nav class="game-nav">
-                <button class="btn-back" onclick="closeGame()">⬅️ 메인 메뉴로 돌아가기</button>
-                <h2 id="currentGameTitle">게임 제목</h2>
-            </nav>
-            <div class="iframe-wrapper">
-                <iframe id="gameFrame" src="" frameborder="0"></iframe>
+    <main class="game-container">
+        <!-- 게임 카드 1: 마피아 게임 -->
+        <!-- href 경로: 'games/폴더명/index.html' 구조로 상대 경로 지정 -->
+        <a href="games/mafia/index.html" class="game-card">
+            <div class="game-content">
+                <div class="game-icon">🕵️‍♂️</div>
+                <div class="game-title">MAFIA GAME</div>
+                <div class="game-desc">심리전과 토론의 대가, 시민들 사이에 숨은 마피아를 찾아내세요.</div>
             </div>
-        </section>
-    </div>
+            <button class="play-btn">PLAY NOW</button>
+        </a>
 
-    <script src="script.js"></script>
+        <!-- 게임 카드 2: 라이어 게임 -->
+        <!-- secondary 클래스를 추가하여 호버 시 핑크색 네온 효과 -->
+        <a href="games/liar/index.html" class="game-card secondary">
+            <div class="game-content">
+                <div class="game-icon">🤥</div>
+                <div class="game-title">LIAR GAME</div>
+                <div class="game-desc">제시어를 모르는 라이어는 누구? 들키지 않게 연기하세요.</div>
+            </div>
+            <button class="play-btn">PLAY NOW</button>
+        </a>
+
+        <!-- 게임 카드 3: 검 강화하기 -->
+        <a href="games/sword/index.html" class="game-card">
+            <div class="game-content">
+                <div class="game-icon">⚔️</div>
+                <div class="game-title">ENHANCE SWORD</div>
+                <div class="game-desc">극한의 확률을 뚫고 전설의 검을 만들어보세요. 파괴 주의!</div>
+            </div>
+            <button class="play-btn">PLAY NOW</button>
+        </a>
+        
+        <!-- 나중에 게임을 추가하려면 위 <a> 태그 블록을 복사해서 경로와 내용을 수정하면 됩니다. -->
+    </main>
+
+    <footer>
+        <p>&copy; 2023 YourName. All rights reserved.</p>
+        <p>Powered by <a href="https://github.com/ YourUserName /VIVE-coding-world" target="_blank">VIVE-coding-world</a></p>
+    </footer>
+
 </body>
 </html>

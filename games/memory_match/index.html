@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카드 짝 맞추기 - VIVE Coding World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0d15;
+            --panel-bg: #161625;
+            --neon-primary: #00f0ff;
+            --neon-secondary: #ff0055;
+            --neon-yellow: #ffe600;
+            --text-color: #ffffff;
+            --card-back: #1f2238;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 상단 네비게이션 & 헤더 */
+        .header-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--neon-primary);
+            color: var(--neon-primary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: var(--neon-primary);
+            color: #000;
+            box-shadow: 0 0 10px var(--neon-primary);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-primary);
+        }
+
+        /* 게임 보드 및 스코어 패널 */
+        .game-wrapper {
+            background-color: var(--panel-bg);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--neon-yellow);
+        }
+
+        /* 카드 그리드 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+            aspect-ratio: 1;
+        }
+
+        /* 3D 카드 애니메이션 */
+        .card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border-radius: 10px;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-back {
+            background-color: var(--card-back);
+            color: var(--neon-primary);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-back::after {
+            content: '⚡';
+            font-size: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .card-front {
+            background-color: #2a2e45;
+            transform: rotateY(180deg);
+            border-color: var(--neon-primary);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .card.matched .card-front {
+            border-color: var(--neon-secondary);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: rotateY(180deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.1); }
+            100% { transform: rotateY(180deg) scale(1); }
+        }
+
+        /* 리셋 버튼 */
+        .btn-reset {
+            margin-top: 20px;
+            background: linear-gradient(135deg, var(--neon-primary), #0077ff);
+            border: none;
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+        }
+
+        /* 승리 모달 레이어 */
+        .modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(13, 13, 21, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--neon-secondary);
+            text-shadow: 0 0 15px var(--neon-secondary);
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            color: #ccc;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <!-- 포털 메인으로 돌아가는 상대 경로 링크 -->
+        <a href="../../index.html" class="btn-back">⬅ MAIN PORTAL</a>
+        <h1>CARD MATCH</h1>
+    </div>
+
+    <div class="game-wrapper">
+        <!-- 스코어 및 상태 표시 영역 -->
+        <div class="score-board">
+            <div class="score-item">
+                <span class="score-label">TIME</span>
+                <span id="timeText" class="score-value">0s</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">MOVES</span>
+                <span id="movesText" class="score-value">0</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">MATCHES</span>
+                <span id="matchesText" class="score-value">0 / 8</span>
+            </div>
+        </div>
+
+        <!-- 카드 4x4 그리드 -->
+        <div id="cardGrid" class="card-grid"></div>
+
+        <button class="btn-reset" onclick="initGame()">RESTART GAME</button>
+
+        <!-- 게임 완료 레이어 -->
+        <div id="winModal" class="modal">
+            <h2>STAGE CLEAR! 🎉</h2>
+            <p id="winStatsText">시간: 0초 | 시도 횟수: 0회</p>
+            <button class="btn-reset" onclick="initGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        // 사용될 8쌍의 이모지 아이콘
+        const EMOJIS = ['🎮', '🚀', '👾', '🤖', '⚔️', '🔮', '🛸', '💎'];
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval = null;
+        let isLockBoard = false;
+        let isGameStarted = false;
+
+        const cardGrid = document.getElementById('cardGrid');
+        const movesText = document.getElementById('movesText');
+        const matchesText = document.getElementById('matchesText');
+        const timeText = document.getElementById('timeText');
+        const winModal = document.getElementById('winModal');
+        const winStatsText = document.getElementById('winStatsText');
+
+        // Fisher-Yates 셔플 알고리즘
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // 게임 초기화
+        function initGame() {
+            // 타이머 및 변수 리셋
+            clearInterval(timerInterval);
+            timer = 0;
+            moves = 0;
+            matchedPairs = 0;
+            flippedCards = [];
+            isLockBoard = false;
+            isGameStarted = false;
+
+            timeText.innerText = '0s';
+            movesText.innerText = '0';
+            matchesText.innerText = `0 / ${EMOJIS.length}`;
+            winModal.classList.remove('active');
+
+            // 8개 이모지를 2개씩 복사하여 16개 덱 구성 후 섞기
+            const deck = shuffle([...EMOJIS, ...EMOJIS]);
+            cardGrid.innerHTML = '';
+
+            deck.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-back"></div>
+                        <div class="card-front">${emoji}</div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => flipCard(card));
+                cardGrid.appendChild(card);
+            });
+        }
+
+        // 타이머 시작
+        function startTimer() {
+            if (isGameStarted) return;
+            isGameStarted = true;
+            timerInterval = setInterval(() => {
+                timer++;
+                timeText.innerText = `${timer}s`;
+            }, 1000);
+        }
+
+        // 카드 뒤집기 로직
+        function flipCard(card) {
+            // 이미 뒤집힘 / 보드 잠김 / 이미 맞춘 카드는 클릭 불가
+            if (isLockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) {
+                return;
+            }
+
+            startTimer();
+
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            // 2장이 뒤집혔을 때 매칭 검사
+            if (flippedCards.length === 2) {
+                moves++;
+                movesText.innerText = moves;
+                checkMatch();
+            }
+        }
+
+        // 짝 맞추기 판정
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            const isMatch = card1.dataset.emoji === card2.dataset.emoji;
+
+            if (isMatch) {
+                // 일치하는 경우
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                matchesText.innerText = `${matchedPairs} / ${EMOJIS.length}`;
+                resetBoard();
+
+                // 모든 짝을 찾았을 때 승리
+                if (matchedPairs === EMOJIS.length) {
+                    handleWin();
+                }
+            } else {
+                // 일치하지 않는 경우 (800ms 후 다시 뒤집기)
+                isLockBoard = true;
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    resetBoard();
+                }, 800);
+            }
+        }
+
+        // 턴 종료 후 보드 상태 해제
+        function resetBoard() {
+            flippedCards = [];
+            isLockBoard = false;
+        }
+
+        // 승리 처리
+        function handleWin() {
+            clearInterval(timerInterval);
+            setTimeout(() => {
+                winStatsText.innerHTML = `총 소요 시간: <b>${timer}초</b><br>시도 횟수: <b>${moves}회</b>`;
+                winModal.classList.add('active');
+            }, 500);
+        }
+
+        // 최초 게임 시작
+        initGame();
+    </script>
+</body>
+</html>

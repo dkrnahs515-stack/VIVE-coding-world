@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>무한의 계단 서바이벌 - 300초 모드</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --panel-bg: #16213e;
+            --accent-yellow: #f1c40f;
+            --accent-red: #e74c3c;
+            --accent-blue: #3498db;
+            --text-main: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 420px;
+            height: 680px;
+            background: var(--panel-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* HUD - 상단 정보 */
+        .hud {
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+        }
+
+        .timer-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.85rem;
+            color: #bdc3c7;
+            font-weight: bold;
+        }
+
+        /* 타이머 바 */
+        .timer-bar-container {
+            width: 100%;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #f1c40f, #2ecc71);
+            transition: width 0.05s linear;
+        }
+
+        /* 캔버스 화면 구역 */
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            width: 100%;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* 하단 조작 버튼 구역 */
+        .controls {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            z-index: 5;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action {
+            background: #2c3e50;
+            border: none;
+            border-bottom: 5px solid #1a252f;
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.05s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-action:active, .btn-action.active {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+        }
+
+        .btn-climb {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-bottom-color: #1e8449;
+        }
+
+        .btn-turn {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            border-bottom-color: #d35400;
+        }
+
+        .key-hint {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+
+        /* 오버레이 화면 */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .overlay.hidden { display: none; }
+
+        .overlay h1 {
+            font-size: 2rem;
+            color: var(--accent-yellow);
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+        }
+
+        .overlay p {
+            font-size: 0.95rem;
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: none;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+            transition: transform 0.1s;
+        }
+
+        .btn-start:hover { transform: scale(1.05); }
+
+        .result-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-val {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <!-- HUD -->
+    <div class="hud">
+        <div id="scoreDisplay" class="score-display">0</div>
+        <div class="timer-info">
+            <span>남은 시간</span>
+            <span id="timeText">300.0s</span>
+        </div>
+        <div class="timer-bar-container">
+            <div id="timerFill" class="timer-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-area">
+        <canvas id="gameCanvas" width="420" height="450"></canvas>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button id="btnTurn" class="btn-action btn-turn" onclick="handleInput('turn')">
+            🔄 방향 전환
+            <span class="key-hint">[A / Left Arrow]</span>
+        </button>
+        <button id="btnClimb" class="btn-action btn-climb" onclick="handleInput('climb')">
+            ⬆️ 오르기
+            <span class="key-hint">[D / Right Arrow]</span>
+        </button>
+    </div>
+
+    <!-- Start Overlay -->
+    <div id="startOverlay" class="overlay">
+        <h1>무한의 계단</h1>
+        <p>
+            제한시간 <b>300초</b> 동안 발판의 방향에 맞춰<br>
+            계단을 최대한 높이 오르세요!<br><br>
+            • <b>오르기</b>: 직진하여 다음 계단으로<br>
+            • <b>방향 전환</b>: 방향을 틀며 다음 계단으로
+        </p>
+        <button class="btn-start" onclick="startGame()">게임 시작</button>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="gameOverOverlay" class="overlay hidden">
+        <h1 style="color: var(--accent-red);">GAME OVER</h1>
+        <div class="result-box">
+            <div style="font-size: 0.85rem; color: #aaa;">최종 점수</div>
+            <div id="finalScore" class="result-val">0</div>
+        </div>
+        <button class="btn-start" onclick="startGame()">다시 도전</button>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const timerFill = document.getElementById('timerFill');
+    const timeText = document.getElementById('timeText');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const finalScore = document.getElementById('finalScore');
+
+    // Web Audio API
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioCtx();
+    }
+
+    function playSound(type) {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'step') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300 + Math.min(score * 2, 400), now);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+        } else if (type === 'fail') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.linearRampToValueAtTime(60, now + 0.3);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+    }
+
+    // 게임 상수 (시간 300초 설정)
+    const STAIR_WIDTH = 60;
+    const STAIR_HEIGHT = 22;
+    const MAX_TIMER = 300; // 제한시간 300초
+
+    // 게임 상태 변수
+    let isPlaying = false;
+    let score = 0;
+    let timer = MAX_TIMER;
+    let lastTime = 0;
+    let playerDir = 1; // 1: 오른쪽, -1: 왼쪽
+    let stairs = []; // {x, y, dir}
+
+    // 카메라 2D 추적 변수 (X축, Y축 모두 추적)
+    let cameraX = 0;
+    let cameraY = 0;
+    let targetCameraX = 0;
+    let targetCameraY = 0;
+
+    // 키보드 조작
+    window.addEventListener('keydown', (e) => {
+        if (!isPlaying) return;
+        if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
+            triggerBtnEffect('btnTurn');
+            handleInput('turn');
+        } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight' || e.key === ' ') {
+            triggerBtnEffect('btnClimb');
+            handleInput('climb');
+        }
+    });
+
+    function triggerBtnEffect(btnId) {
+        const btn = document.getElementById(btnId);
+        btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 80);
+    }
+
+    function startGame() {
+        initAudio();
+        score = 0;
+        timer = MAX_TIMER;
+        playerDir = 1;
+        stairs = [];
+        isPlaying = true;
+
+        scoreDisplay.innerText = '0';
+        timeText.innerText = '300.0s';
+        startOverlay.classList.add('hidden');
+        gameOverOverlay.classList.add('hidden');
+
+        // 첫 번째 계단 생성 (화면 중앙 하단)
+        const startX = canvas.width / 2;
+        const startY = canvas.height - 120;
+        stairs.push({ x: startX, y: startY, dir: 1 });
+
+        // 카메라 초기 위치 설정
+        cameraX = startX - canvas.width / 2;
+        cameraY = startY - (canvas.height / 2 + 50);
+        targetCameraX = cameraX;
+        targetCameraY = cameraY;
+
+        // 초기 계단 무작위 보충 생성
+        let currentX = startX;
+        let currentY = startY;
+        let lastDir = 1;
+
+        for (let i = 1; i < 50; i++) {
+            if (Math.random() < 0.3) {
+                lastDir *= -1;
+            }
+            currentX += lastDir * (STAIR_WIDTH * 0.7);
+            currentY -= STAIR_HEIGHT;
+            stairs.push({ x: currentX, y: currentY, dir: lastDir });
+        }
+
+        lastTime = performance.now();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function handleInput(type) {
+        if (!isPlaying) return;
+
+        if (type === 'turn') {
+            playerDir *= -1;
+        }
+
+        const currentStair = stairs[score];
+        const nextStair = stairs[score + 1];
+
+        // 다음 계단의 이동 방향 검증
+        const requiredDir = (nextStair.x > currentStair.x) ? 1 : -1;
+
+        if (playerDir === requiredDir) {
+            // 성공
+            score++;
+            scoreDisplay.innerText = score;
+            playSound('step');
+
+            // 계단 오를 시 시간 보상 (최대 300초 보존)
+            const recover = Math.max(2.0 - Math.floor(score / 50) * 0.2, 0.5);
+            timer = Math.min(MAX_TIMER, timer + recover);
+
+            // ✨ 캐릭터 이동 시 카메라의 목표 X, Y 위치를 업데이트 (캐릭터를 중심에 배치)
+            targetCameraX = nextStair.x - canvas.width / 2;
+            targetCameraY = nextStair.y - (canvas.height / 2 + 50);
+
+            // 지속적으로 계단 보충 생성
+            const lastStair = stairs[stairs.length - 1];
+            let newDir = lastStair.dir;
+            if (Math.random() < 0.35) newDir *= -1;
+            stairs.push({
+                x: lastStair.x + newDir * (STAIR_WIDTH * 0.7),
+                y: lastStair.y - STAIR_HEIGHT,
+                dir: newDir
+            });
+
+        } else {
+            // 실패
+            gameOver();
+        }
+    }
+
+    function gameOver() {
+        isPlaying = false;
+        playSound('fail');
+        finalScore.innerText = score;
+        gameOverOverlay.classList.remove('hidden');
+    }
+
+    function update(dt) {
+        // 타이머 감소 (1초당 1초 감소)
+        timer -= dt;
+
+        if (timer <= 0) {
+            timer = 0;
+            gameOver();
+        }
+
+        // HUD 타이머 게이지 및 시간 텍스트 업데이트
+        timerFill.style.width = `${(timer / MAX_TIMER) * 100}%`;
+        timeText.innerText = `${timer.toFixed(1)}s`;
+
+        // ✨ 카메라인 보간 (캐릭터 이동에 따라 화면이 부드럽게 X, Y축 모두 따라 움직임)
+        const lerpSpeed = 12;
+        cameraX += (targetCameraX - cameraX) * lerpSpeed * dt;
+        cameraY += (targetCameraY - cameraY) * lerpSpeed * dt;
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        // ✨ 화면(카메라) 이동 변환 적용
+        ctx.translate(-cameraX, -cameraY);
+
+        // 배경 그리드 그래픽 (화면 이동 시 움직임 감을 극대화)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.lineWidth = 1;
+        const startGridX = Math.floor(cameraX / 40) * 40;
+        const startGridY = Math.floor(cameraY / 40) * 40;
+        for (let x = startGridX; x < startGridX + canvas.width + 80; x += 40) {
+            ctx.beginPath(); ctx.moveTo(x, cameraY - 40); ctx.lineTo(x, cameraY + canvas.height + 40); ctx.stroke();
+        }
+        for (let y = startGridY; y < startGridY + canvas.height + 80; y += 40) {
+            ctx.beginPath(); ctx.moveTo(cameraX - 40, y); ctx.lineTo(cameraX + canvas.width + 40, y); ctx.stroke();
+        }
+
+        // 계단 그리기
+        const startIdx = Math.max(0, score - 10);
+        const endIdx = Math.min(stairs.length, score + 30);
+
+        for (let i = startIdx; i < endIdx; i++) {
+            const stair = stairs[i];
+            const isCurrent = (i === score);
+
+            ctx.fillStyle = isCurrent ? '#f1c40f' : '#34495e';
+            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+            ctx.shadowBlur = 6;
+
+            ctx.fillRect(stair.x - STAIR_WIDTH / 2, stair.y, STAIR_WIDTH, STAIR_HEIGHT);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(stair.x - STAIR_WIDTH / 2, stair.y, STAIR_WIDTH, STAIR_HEIGHT);
+        }
+
+        // 캐릭터 그리기
+        if (stairs[score]) {
+            const pStair = stairs[score];
+            const px = pStair.x;
+            const py = pStair.y - 25;
+
+            ctx.save();
+            ctx.translate(px, py);
+
+            // 캐릭터 몸체
+            ctx.fillStyle = '#e74c3c';
+            ctx.shadowColor = '#e74c3c';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(0, 0, 16, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 바라보는 시선 연출
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(playerDir * 6, -4, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(playerDir * 7, -4, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        ctx.restore();
+    }
+
+    function gameLoop(timestamp) {
+        if (!isPlaying) return;
+
+        const dt = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        if (dt < 0.1) {
+            update(dt);
+            render();
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+</script>
+
+</body>
+</html>

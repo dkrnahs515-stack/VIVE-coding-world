@@ -22,6 +22,7 @@ HTML, CSS, JavaScript로 제작된 게임을 한곳에서 선택해 플레이할
 | 🐍 **SNAKE** | 아케이드·순발력 | 네온 뱀을 조작해 먹이를 모으고 몸을 늘리며 최고 점수에 도전하는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/snake/) |
 | 💣 **MINESWEEPER** | 퍼즐·추리 | 숫자 단서를 분석해 지뢰를 피하고 안전한 칸을 모두 찾는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/minesweeper/) |
 | 🔢 **2048** | 숫자·퍼즐 | 같은 숫자 타일을 밀어서 합치고 더 높은 숫자에 도전하는 퍼즐 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/2048/) |
+| 🐤 **FLAPPY BIRD** | 캐주얼·액션 | Space 또는 화면 클릭으로 새를 날려 파이프를 통과하는 기록 도전 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/flappy_bird/) |
 | 🏃 **VIBE ESCAPE** | 액션·대탈출 | 캐릭터를 선택하고 50개 스테이지와 보스를 돌파하는 게임 | [플레이](https://dkrnahs515-stack.github.io/gsyouth-exit-/) |
 
 > **VIBE ESCAPE**는 별도의 GitHub Pages 프로젝트로 운영되며, VIVE Coding World 메인 아케이드에서 연결됩니다.
@@ -60,7 +61,9 @@ VIVE-coding-world/
    │  └─ index.html
    ├─ minesweeper/
    │  └─ index.html
-   └─ 2048/
+   ├─ 2048/
+   │  └─ index.html
+   └─ flappy_bird/
       └─ index.html
 ```
 

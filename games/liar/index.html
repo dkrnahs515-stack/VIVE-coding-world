@@ -120,5 +120,6 @@ function showResult(liarWon,detail){$('result-title').className=`result ${liarWo
 
 $('player-count').addEventListener('change',renderPlayerInputs);$('start-button').addEventListener('click',()=>beginGame(false));$('reveal-role').addEventListener('click',revealRole);$('role-next').addEventListener('click',nextRole);$('begin-vote').addEventListener('click',()=>beginVoting());$('open-vote').addEventListener('click',openVote);$('submit-vote').addEventListener('click',submitVote);$('submit-guess').addEventListener('click',submitGuess);$('liar-guess').addEventListener('keydown',e=>{if(e.key==='Enter')submitGuess()});$('restart-button').addEventListener('click',()=>beginGame(true));$('new-game-button').addEventListener('click',()=>{renderPlayerInputs();showScreen('setup-screen')});$('home-button').addEventListener('click',()=>location.href='../../index.html');renderPlayerInputs();
 </script>
+    <script src="../common/game-shell.js" data-title="라이어 게임" data-intro="false"></script>
 </body>
 </html>

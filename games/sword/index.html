@@ -1,1 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전설의 검 강화하기</title>
+    <style>
+        :root {
+            --bg-color: #1a1a24;
+            --panel-bg: #252636;
+            --accent-gold: #ffb703;
+            --accent-red: #e63946;
+            --accent-green: #2a9d8f;
+            --text-main: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px rgba(255, 183, 3, 0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .gold { color: var(--accent-gold); }
+        .scroll { color: #4cc9f0; }
+
+        /* 무기 디스플레이 구역 */
+        .weapon-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weapon-icon {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            transition: transform 0.1s ease;
+            display: inline-block;
+        }
+
+        .weapon-level {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #aaa;
+        }
+
+        .weapon-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-top: 5px;
+            color: var(--text-main);
+        }
+
+        /* 확률 스탯 정보 */
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label { font-size: 0.75rem; color: #888; }
+        .stat-val-success { color: var(--accent-green); font-weight: bold; }
+        .stat-val-fail { color: var(--accent-gold); font-weight: bold; }
+        .stat-val-destroy { color: var(--accent-red); font-weight: bold; }
+
+        /* 컨트롤 버튼 구역 */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: #3a3b52;
+            color: var(--text-main);
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover { background: #4a4b66; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-enhance {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #f72585, #7209b7);
+            font-size: 1.1rem;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.3);
+        }
+
+        .btn-enhance:hover {
+            background: linear-gradient(135deg, #ff007f, #8100e0);
+        }
+
+        /* 로그 박스 */
+        .log-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            height: 100px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column-reverse;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-item { margin-bottom: 4px; }
+        .log-success { color: #4ed99c; }
+        .log-fail { color: #ffb703; }
+        .log-destroy { color: #ff5252; font-weight: bold; }
+        .log-info { color: #8d99ae; }
+
+        /* 연출 애니메이션 */
+        @keyframes hammer {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(-30deg) scale(1.2); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(1px, -1px) rotate(-1deg); }
+            60% { transform: translate(-2px, 1px) rotate(0deg); }
+            80% { transform: translate(2px, 1px) rotate(1deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+
+        .anim-hammer { animation: hammer 0.3s ease infinite; }
+        .anim-shake { animation: shake 0.2s ease infinite; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⚔️ 전설의 검 강화하기</h1>
+
+    <div class="status-bar">
+        <span>💰 <span id="gold-val" class="gold">10,000</span> G</span>
+        <span>🛡️ 방지권: <span id="scroll-val" class="scroll">1</span>개</span>
+    </div>
+
+    <div class="weapon-card" id="weapon-card">
+        <div class="weapon-icon" id="weapon-icon">🗡️</div>
+        <div class="weapon-level" id="weapon-level">+0</div>
+        <div class="weapon-name" id="weapon-name">녹슨 낡은 검</div>
+    </div>
+
+    <div class="stats-panel">
+        <div class="stat-item">
+            <span class="stat-label">성공 확률</span>
+            <span class="stat-val-success" id="rate-success">100%</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">실패(하락)</span>
+            <span class="stat-val-fail" id="rate-fail">0%</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">파괴 확률</span>
+            <span class="stat-val-destroy" id="rate-destroy">0%</span>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-enhance" id="btn-enhance" onclick="actionEnhance()">
+            🔨 강화하기 (<span id="cost-enhance">1,000</span> G)
+        </button>
+        <button onclick="actionWork()">⛏️ 광산 알바 (+골드)</button>
+        <button onclick="actionBuyScroll()">🛡️ 방지권 구매 (20k G)</button>
+        <button onclick="actionSell()" style="grid-column: span 2; background: #2b2d42;">
+            💰 현재 검 판매하기 (<span id="cost-sell">500</span> G)
+        </button>
+    </div>
+
+    <div class="log-box" id="log-box">
+        <div class="log-item log-info">게임을 시작합니다. 검을 강화하여 전설의 신검을 만들어보세요!</div>
+    </div>
+</div>
+
+<script>
+    // --- 게임 상태 관리 ---
+    let state = {
+        gold: 10000,
+        level: 0,
+        scrolls: 1,
+        isProcessing: false
+    };
+
+    const swordNames = [
+        "녹슨 낡은 검", "녹을 털어낸 검", "단단한 철검", "강철 장검", "빛나는 은검",
+        "명장의 눈부신 검", "마력이 흐르는 검", "고대 정령의 검", "용살자의 대검", "파멸의 붉은검",
+        "신성한 광휘의 검", "시공을 가르는 검", "차원의 집행자", "신을 베는 검", "절대자의 신검"
+    ];
+
+    const swordIcons = ["🗡️", "⚔️", "🔪", "🗡️", "⚔️", "✨🗡️", "🔮⚔️", "🌿🗡️", "🐉⚔️", "🔥🗡️", "🌟⚔️", "🌀🗡️", "🌌⚔️", "⚡🗡️", "👑⚔️"];
+
+    // --- Web Audio API (합성음 사운드 효과) ---
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioCtx();
+    }
+
+    function playSound(type) {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'hammer') {
+            // 망치 소리 (짧은 고음 주파수 감소)
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } else if (type === 'success') {
+            // 성공음 (상승음 멜로디)
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(554.37, now + 0.1); // C#
+            osc.frequency.setValueAtTime(659.25, now + 0.2); // E
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now);
+            osc.stop(now + 0.5);
+        } else if (type === 'fail') {
+            // 실패음 (하강음)
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } else if (type === 'destroy') {
+            // 파괴음 (노이즈 느낌의 저음 붕괴)
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(120, now);
+            osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } else if (type === 'coin') {
+            // 코인 수급 소리
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(987.77, now); // B5
+            osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+        }
+    }
+
+    // --- 수치 계산 로직 ---
+    function getStats() {
+        const cost = Math.floor(1000 * Math.pow(1.5, state.level));
+        const sellPrice = Math.floor(500 * Math.pow(2.1, state.level));
+
+        let successRate, destroyRate;
+
+        if (state.level < 3) {
+            successRate = 100;
+            destroyRate = 0;
+        } else if (state.level < 6) {
+            successRate = 80 - (state.level - 3) * 10;
+            destroyRate = 0;
+        } else if (state.level < 10) {
+            successRate = 50 - (state.level - 6) * 8;
+            destroyRate = 10 + (state.level - 6) * 5;
+        } else {
+            successRate = Math.max(5, 20 - (state.level - 10) * 3);
+            destroyRate = Math.min(50, 30 + (state.level - 10) * 5);
+        }
+
+        const failRate = Math.max(0, 100 - successRate - destroyRate);
+        return { cost, sellPrice, successRate, failRate, destroyRate };
+    }
+
+    // --- UI 업데이트 ---
+    function updateUI() {
+        const stats = getStats();
+        
+        document.getElementById('gold-val').innerText = state.gold.toLocaleString();
+        document.getElementById('scroll-val').innerText = state.scrolls;
+        
+        document.getElementById('weapon-level').innerText = `+${state.level}`;
+        document.getElementById('weapon-name').innerText = swordNames[Math.min(state.level, swordNames.length - 1)] || `전설의 신검 (+${state.level})`;
+        document.getElementById('weapon-icon').innerText = swordIcons[Math.min(state.level, swordIcons.length - 1)] || "👑⚔️";
+        
+        document.getElementById('rate-success').innerText = `${stats.successRate}%`;
+        document.getElementById('rate-fail').innerText = `${stats.failRate}%`;
+        document.getElementById('rate-destroy').innerText = `${stats.destroyRate}%`;
+        
+        document.getElementById('cost-enhance').innerText = stats.cost.toLocaleString();
+        document.getElementById('cost-sell').innerText = stats.sellPrice.toLocaleString();
+
+        document.getElementById('btn-enhance').disabled = state.isProcessing;
+    }
+
+    function addLog(text, className = 'log-info') {
+        const box = document.getElementById('log-box');
+        const item = document.createElement('div');
+        item.className = `log-item ${className}`;
+        item.innerText = text;
+        box.insertBefore(item, box.firstChild);
+    }
+
+    // --- 주요 행동 컨트롤 ---
+    async function actionEnhance() {
+        if (state.isProcessing) return;
+        const stats = getStats();
+
+        if (state.gold < stats.cost) {
+            addLog("❌ 골드가 부족합니다! 광산 알바나 판매를 이용하세요.", "log-fail");
+            return;
+        }
+
+        // 파괴 방지권 사용 여부 확인
+        let useScroll = false;
+        if (stats.destroyRate > 0 && state.scrolls > 0) {
+            if (confirm(`파괴 위험(${stats.destroyRate}%)이 있습니다. 파괴 방지권을 사용하시겠습니까?`)) {
+                state.scrolls--;
+                useScroll = true;
+                addLog("🛡️ 파괴 방지권이 적용되었습니다.", "log-info");
+            }
+        }
+
+        state.gold -= stats.cost;
+        state.isProcessing = true;
+        updateUI();
+
+        // 타격 연출
+        const weaponCard = document.getElementById('weapon-card');
+        weaponCard.classList.add('anim-hammer');
+
+        for (let i = 0; i < 3; i++) {
+            playSound('hammer');
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        weaponCard.classList.remove('anim-hammer');
+
+        // 확률 판정
+        const rand = Math.random() * 100;
+
+        if (rand < stats.successRate) {
+            state.level++;
+            playSound('success');
+            addLog(`✨ [강화 성공] +${state.level} 달성!`, "log-success");
+        } else if (rand < stats.successRate + stats.failRate) {
+            playSound('fail');
+            if (state.level > 0) {
+                state.level--;
+                addLog(`💧 [강화 실패] 단계가 하락하여 +${state.level}이 되었습니다.`, "log-fail");
+            } else {
+                addLog(`💧 [강화 실패] 0강 이하로는 떨어지지 않습니다.`, "log-fail");
+            }
+        } else {
+            if (useScroll) {
+                playSound('fail');
+                addLog(`🛡️ [파괴 방지] 검이 깨질 위험을 방지권으로 막았습니다!`, "log-info");
+            } else {
+                playSound('destroy');
+                weaponCard.classList.add('anim-shake');
+                setTimeout(() => weaponCard.classList.remove('anim-shake'), 400);
+                state.level = 0;
+                addLog(`💥 [무기 파괴] 검이 산산조각 났습니다... (+0 초기화)`, "log-destroy");
+            }
+        }
+
+        state.isProcessing = false;
+        updateUI();
+    }
+
+    function actionWork() {
+        if (state.isProcessing) return;
+        const earned = Math.floor(Math.random() * 4000) + 3000;
+        state.gold += earned;
+        playSound('coin');
+        addLog(`⛏️ 광산에서 일하여 ${earned.toLocaleString()} G를 얻었습니다.`, "log-info");
+        updateUI();
+    }
+
+    function actionBuyScroll() {
+        if (state.isProcessing) return;
+        const price = 20000;
+        if (state.gold < price) {
+            addLog(`❌ 골드가 부족합니다. (필요: ${price.toLocaleString()} G)`, "log-fail");
+            return;
+        }
+        state.gold -= price;
+        state.scrolls++;
+        playSound('coin');
+        addLog(`🛡️ 파괴 방지권을 구매했습니다.`, "log-info");
+        updateUI();
+    }
+
+    function actionSell() {
+        if (state.isProcessing) return;
+        if (state.level === 0) {
+            addLog(`❌ 기본 검은 판매할 수 없습니다.`, "log-fail");
+            return;
+        }
+
+        const stats = getStats();
+        if (confirm(`현재 검을 ${stats.sellPrice.toLocaleString()} G에 판매하시겠습니까?`)) {
+            state.gold += stats.sellPrice;
+            playSound('coin');
+            addLog(`💰 +${state.level} 검을 판매하여 ${stats.sellPrice.toLocaleString()} G를 획득했습니다!`, "log-success");
+            state.level = 0;
+            updateUI();
+        }
+    }
+
+    // 초기화
+    updateUI();
+</script>
+
+</body>
+</html>
 

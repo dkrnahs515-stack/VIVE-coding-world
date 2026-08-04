@@ -20,6 +20,7 @@ HTML, CSS, JavaScript로 제작된 게임을 한곳에서 선택해 플레이할
 | 🃏 **CARD MATCH** | 퍼즐·기억력 | 16장의 카드를 뒤집어 같은 그림 8쌍을 찾는 카드 짝 맞추기 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/memory_match/) |
 | 🧱 **TETRIS** | 퍼즐·아케이드 | 떨어지는 블록을 이동하고 회전시켜 가로줄을 완성하는 클래식 퍼즐 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/tetris/) |
 | 🐍 **SNAKE** | 아케이드·순발력 | 네온 뱀을 조작해 먹이를 모으고 몸을 늘리며 최고 점수에 도전하는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/snake/) |
+| 💣 **MINESWEEPER** | 퍼즐·추리 | 숫자 단서를 분석해 지뢰를 피하고 안전한 칸을 모두 찾는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/minesweeper/) |
 | 🏃 **VIBE ESCAPE** | 액션·대탈출 | 캐릭터를 선택하고 50개 스테이지와 보스를 돌파하는 게임 | [플레이](https://dkrnahs515-stack.github.io/gsyouth-exit-/) |
 
 > **VIBE ESCAPE**는 별도의 GitHub Pages 프로젝트로 운영되며, VIVE Coding World 메인 아케이드에서 연결됩니다.
@@ -54,7 +55,9 @@ VIVE-coding-world/
    │  └─ index.html
    ├─ tetris/
    │  └─ index.html
-   └─ snake/
+   ├─ snake/
+   │  └─ index.html
+   └─ minesweeper/
       └─ index.html
 ```
 

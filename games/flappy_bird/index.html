@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>플래피 버드 - VIVE Coding World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg-color:#0d0d15;--panel-bg:#161625;--neon-primary:#00f0ff;--neon-secondary:#ff0055;--neon-yellow:#ffe600;--text-color:#fff}*{box-sizing:border-box;margin:0;padding:0;user-select:none}body{background:var(--bg-color);color:var(--text-color);font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}.header-container{width:100%;max-width:400px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.btn-back{background:transparent;border:1px solid var(--neon-primary);color:var(--neon-primary);padding:8px 16px;border-radius:6px;font-weight:bold;text-decoration:none;font-size:.9rem;transition:.3s}.btn-back:hover{background:var(--neon-primary);color:#000;box-shadow:0 0 10px var(--neon-primary)}h1{font-family:'Orbitron',sans-serif;font-size:1.8rem;text-shadow:0 0 10px var(--neon-primary)}.game-wrapper{background:var(--panel-bg);border:2px solid rgba(0,240,255,.3);border-radius:18px;padding:20px;box-shadow:0 0 30px rgba(0,0,0,.8);display:flex;flex-direction:column;align-items:center;gap:15px}.score-board{display:flex;justify-content:space-around;width:100%;background:rgba(0,0,0,.4);padding:10px;border-radius:10px;font-family:'Orbitron',sans-serif}.score-item{display:flex;flex-direction:column;align-items:center}.score-label{font-size:.75rem;color:#888}.score-value{font-size:1.2rem;font-weight:bold;color:var(--neon-yellow)}canvas{background:#000;border:2px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer}.btn-action{background:linear-gradient(135deg,var(--neon-primary),#0077ff);border:none;color:#000;padding:12px 30px;border-radius:25px;font-weight:bold;font-family:'Orbitron',sans-serif;cursor:pointer;transition:.2s;box-shadow:0 0 15px rgba(0,240,255,.4)}.btn-action:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(0,240,255,.7)}
+    </style>
+</head>
+<body>
+    <div class="header-container"><a href="../../index.html" class="btn-back">⬅ MAIN PORTAL</a><h1>FLAPPY BIRD</h1></div>
+    <div class="game-wrapper">
+        <div class="score-board">
+            <div class="score-item"><span class="score-label">SCORE</span><span id="score" class="score-value">0</span></div>
+            <div class="score-item"><span class="score-label">BEST</span><span id="best" class="score-value">0</span></div>
+        </div>
+        <canvas id="flappy" width="320" height="480"></canvas>
+        <button class="btn-action" onclick="resetGame()">RESTART GAME</button>
+    </div>
+    <script>
+        const canvas=document.getElementById('flappy');
+        const ctx=canvas.getContext('2d');
+        let bird={x:50,y:150,radius:12,velocity:0,gravity:.25,jump:-4.6};
+        let pipes=[];let score=0;let bestScore=localStorage.getItem('flappy_best')||0;let frame=0;let isGameOver=false;
+        document.getElementById('best').innerText=bestScore;
+        function drawBird(){ctx.fillStyle='#ffe600';ctx.beginPath();ctx.arc(bird.x,bird.y,bird.radius,0,Math.PI*2);ctx.fill()}
+        function updateBird(){bird.velocity+=bird.gravity;bird.y+=bird.velocity;if(bird.y+bird.radius>=canvas.height||bird.y-bird.radius<=0)gameOver()}
+        function createPipe(){if(frame%100===0){let gap=120,minHeight=50,maxHeight=canvas.height-gap-minHeight;let topHeight=Math.floor(Math.random()*(maxHeight-minHeight+1))+minHeight;pipes.push({x:canvas.width,top:topHeight,bottom:canvas.height-topHeight-gap,passed:false})}}
+        function updatePipes(){for(let i=0;i<pipes.length;i++){let p=pipes[i];p.x-=2;if(bird.x+bird.radius>p.x&&bird.x-bird.radius<p.x+50&&(bird.y-bird.radius<p.top||bird.y+bird.radius>canvas.height-p.bottom))gameOver();if(p.x+50<bird.x&&!p.passed){p.passed=true;score++;document.getElementById('score').innerText=score;if(score>bestScore){bestScore=score;localStorage.setItem('flappy_best',bestScore);document.getElementById('best').innerText=bestScore}}}if(pipes.length>0&&pipes[0].x< -50)pipes.shift()}
+        function drawPipes(){ctx.fillStyle='#00ff66';pipes.forEach(p=>{ctx.fillRect(p.x,0,50,p.top);ctx.fillRect(p.x,canvas.height-p.bottom,50,p.bottom)})}
+        function gameOver(){isGameOver=true}
+        function resetGame(){bird.y=150;bird.velocity=0;pipes=[];score=0;frame=0;isGameOver=false;document.getElementById('score').innerText=score}
+        function loop(){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);if(!isGameOver){updateBird();createPipe();updatePipes();frame++}drawPipes();drawBird();requestAnimationFrame(loop)}
+        window.addEventListener('keydown',e=>{if(e.code==='Space'){if(isGameOver)resetGame();else bird.velocity=bird.jump}});
+        canvas.addEventListener('click',()=>{if(isGameOver)resetGame();else bird.velocity=bird.jump});
+        loop();
+    </script>
+</body>
+</html>

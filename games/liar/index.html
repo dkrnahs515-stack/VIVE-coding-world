@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>라이어 게임 | VIVE Coding World</title>
+  <style>
+    :root{--bg:#090b18;--panel:#14182d;--line:#2b3358;--text:#f7f8ff;--muted:#aeb8dc;--cyan:#36e1ff;--pink:#ff4f9a;--yellow:#ffd166;--good:#55e6a5;--bad:#ff6b7a}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,#26346e 0,#11152b 35%,var(--bg) 75%);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif;display:flex;justify-content:center;padding:20px}
+    button,input,select{font:inherit}.app{width:min(100%,540px)}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.brand{color:var(--cyan);font-size:.78rem;letter-spacing:2px;font-weight:900}.home{color:var(--muted);text-decoration:none;font-size:.9rem}.home:hover{color:var(--cyan)}
+    .panel{background:rgba(20,24,45,.96);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,5vw,34px);box-shadow:0 22px 70px #0008}.screen{display:none}.screen.active{display:block;animation:show .22s ease}@keyframes show{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    h1,h2{margin:0 0 12px;text-align:center}h1{font-size:clamp(2rem,8vw,3.1rem);text-shadow:0 0 20px #36e1ff66}h2{color:var(--cyan)}p{line-height:1.55}.lead,.center{text-align:center}.lead{color:var(--muted);margin-bottom:24px}.rules{background:#0c1022;border:1px solid var(--line);border-radius:14px;padding:16px;margin:20px 0;color:#dce2ff;line-height:1.65;font-size:.94rem}.rules strong{color:var(--yellow)}
+    .field{margin:14px 0}.field label{display:block;margin-bottom:7px;color:#dce2ff;font-weight:700}.field input,.field select,select{width:100%;padding:13px 14px;background:#0b0e1e;border:1px solid #39436f;border-radius:10px;color:var(--text);outline:none}.field input:focus,.field select:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #36e1ff20}.players{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}.players input{width:100%;padding:12px;background:#0b0e1e;border:1px solid #39436f;border-radius:9px;color:var(--text)}
+    button{width:100%;border:0;border-radius:11px;padding:14px 18px;margin-top:10px;background:linear-gradient(135deg,var(--cyan),#5677ff);color:#07101b;font-weight:900;cursor:pointer;transition:.18s}button:hover{transform:translateY(-2px);filter:brightness(1.08)}button.secondary{background:#252d50;color:#eaf0ff}button.danger{background:linear-gradient(135deg,var(--pink),#ff7043);color:#fff}.role-card{margin:24px 0;padding:35px 18px;border:1px solid #3b4779;border-radius:18px;background:linear-gradient(145deg,#0c1022,#20294b);text-align:center;min-height:155px;display:grid;place-items:center;font-size:clamp(1.5rem,6vw,2.15rem);font-weight:900}.role-card.liar{border-color:#ff4f9a;color:#ff8fbd;box-shadow:0 0 28px #ff4f9a25}.role-card.citizen{border-color:#36e1ff;color:#8defff;box-shadow:0 0 28px #36e1ff22}.hidden{display:none!important}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#262f55;color:var(--yellow);font-size:.82rem;font-weight:800}.order{font-size:1.1rem;color:var(--yellow);font-weight:900;text-align:center}.notice{background:#2b2441;border:1px solid #72518d;padding:13px;border-radius:10px;text-align:center;color:#ffd6ef;margin:13px 0}.vote-list{display:grid;gap:9px;margin:18px 0}.candidate{display:flex;align-items:center;gap:11px;padding:13px;background:#0c1022;border:1px solid var(--line);border-radius:11px;cursor:pointer}.candidate input{accent-color:var(--pink);transform:scale(1.25)}.result{font-size:1.5rem;font-weight:900;text-align:center;margin:20px 0}.good{color:var(--good)}.bad{color:var(--bad)}.summary{background:#0c1022;border:1px solid var(--line);border-radius:14px;padding:16px;line-height:1.75}.footer{text-align:center;color:#6e789d;font-size:.78rem;margin-top:16px}@media(max-width:430px){body{padding:10px}.panel{border-radius:16px;padding:20px 16px}.players{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <div class="topbar"><span class="brand">VIVE CODING WORLD</span><a class="home" href="../../index.html">← 아케이드</a></div>
+  <section class="panel">
+    <div id="setup-screen" class="screen active">
+      <h1>🤥 LIAR GAME</h1><p class="lead">제시어를 모르는 단 한 명을 찾아내세요.</p>
+      <div class="rules"><strong>게임 방법</strong><br>① 3~8명이 한 기기를 차례로 확인합니다.<br>② 시민은 같은 제시어를, 라이어는 정체만 확인합니다.<br>③ 한 명씩 제시어의 특징을 말한 뒤 비밀 투표합니다.<br>④ 동점이면 동점 후보끼리 재투표합니다.<br>⑤ 라이어가 지목돼도 제시어를 맞히면 역전승합니다.</div>
+      <div class="field"><label for="player-count">참가 인원</label><select id="player-count"><option value="3">3명</option><option value="4">4명</option><option value="5" selected>5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option></select></div>
+      <div id="player-inputs" class="players"></div>
+      <button id="start-button">게임 시작</button>
+    </div>
+
+    <div id="role-screen" class="screen">
+      <div class="order" id="role-turn"></div><p class="center">해당 플레이어만 화면을 확인하세요.</p>
+      <div id="role-cover"><div class="role-card">🔒<br>화면이 가려져 있습니다</div><button id="reveal-role">내 정체 확인하기</button></div>
+      <div id="role-reveal" class="hidden"><div id="role-card" class="role-card"></div><button id="role-next">확인 완료 · 화면 숨기기</button></div>
+    </div>
+
+    <div id="discussion-screen" class="screen">
+      <h2>💬 특징 설명 시간</h2><p class="lead">시작 플레이어부터 한 문장씩 말하세요. 너무 정확하면 라이어에게 제시어를 들킬 수 있습니다.</p>
+      <div class="role-card"><div><span class="badge">시작 플레이어</span><br><br><strong id="first-speaker"></strong></div></div>
+      <div class="rules">모든 참가자가 설명을 마친 뒤 토론하세요. 준비되면 각자 화면을 넘겨받아 비밀 투표를 진행합니다.</div>
+      <button id="begin-vote" class="danger">비밀 투표 시작</button>
+    </div>
+
+    <div id="vote-pass-screen" class="screen">
+      <h2 id="vote-pass-title">기기를 전달하세요</h2><div id="revote-notice" class="notice hidden">동점입니다. 재투표합니다.</div>
+      <div class="role-card">🗳️<br><span id="vote-pass-player"></span></div><p class="center">다른 사람이 보지 못하도록 가린 뒤 투표 화면을 여세요.</p>
+      <button id="open-vote">내 투표 화면 열기</button>
+    </div>
+
+    <div id="vote-screen" class="screen">
+      <h2 id="vote-title">라이어 지목</h2><p class="lead">가장 의심스러운 사람 한 명을 선택하세요.</p><div id="vote-options" class="vote-list"></div>
+      <button id="submit-vote" class="danger">투표 확정 · 화면 숨기기</button>
+    </div>
+
+    <div id="guess-screen" class="screen">
+      <h2>⚠️ 라이어 최후의 기회</h2><p class="lead"><strong id="caught-liar"></strong>님이 라이어로 지목됐습니다. 제시어를 정확히 맞히면 역전승합니다.</p>
+      <div class="field"><label for="liar-guess">라이어의 최종 추측</label><input id="liar-guess" type="text" autocomplete="off" placeholder="제시어 입력"></div>
+      <button id="submit-guess" class="danger">최종 정답 제출</button>
+    </div>
+
+    <div id="result-screen" class="screen">
+      <h2>게임 결과</h2><div id="result-title" class="result"></div><div id="result-summary" class="summary"></div>
+      <button id="restart-button">같은 멤버로 다시 하기</button><button id="new-game-button" class="secondary">인원 다시 설정하기</button><button id="home-button" class="secondary">아케이드로 돌아가기</button>
+    </div>
+  </section>
+  <div class="footer">제작: 강서청소년회관 &lt;바이브 코딩&gt; 참가자 일동</div>
+</main>
+
+<script>
+/* TESTABLE_LOGIC_START */
+function normalizePlayerNames(rawNames) {
+  if (rawNames.length < 3 || rawNames.length > 8) throw new Error('참가자는 3명부터 8명까지 가능합니다.');
+  return rawNames.map((name, index) => String(name || '').trim() || `플레이어 ${index + 1}`);
+}
+function chooseLiarIndex(playerCount, randomValue = Math.random()) {
+  return Math.min(playerCount - 1, Math.floor(randomValue * playerCount));
+}
+function tallyVotes(votes, candidateIndexes) {
+  const eligible = new Set(candidateIndexes);
+  const counts = new Map(candidateIndexes.map(index => [index, 0]));
+  votes.forEach(index => { if (eligible.has(index)) counts.set(index, counts.get(index) + 1); });
+  return counts;
+}
+function getVoteOutcome(votes, candidateIndexes) {
+  const counts = tallyVotes(votes, candidateIndexes);
+  const maxVotes = Math.max(...counts.values());
+  const leaders = [...counts.entries()].filter(([, count]) => count === maxVotes).map(([index]) => index);
+  return leaders.length === 1 ? { type: 'winner', candidateIndex: leaders[0], maxVotes } : { type: 'tie', candidateIndexes: leaders, maxVotes };
+}
+/* TESTABLE_LOGIC_END */
+
+const WORD_BANK = [
+  {category:'음식',icon:'🍽️',words:['떡볶이','김밥','치킨','피자','초밥','삼겹살','마라탕','붕어빵','냉면','햄버거']},
+  {category:'동물',icon:'🐾',words:['고양이','펭귄','카피바라','호랑이','돌고래','판다','기린','문어','수달','독수리']},
+  {category:'장소',icon:'🗺️',words:['학교','놀이공원','편의점','도서관','공항','수영장','PC방','동물원','영화관','캠핑장']},
+  {category:'물건',icon:'🎒',words:['우산','이어폰','칫솔','리모컨','선풍기','가위','축구공','충전기','자전거','냉장고']},
+  {category:'직업',icon:'🧑‍🚀',words:['소방관','요리사','운동선수','교사','의사','유튜버','경찰관','웹툰작가','파일럿','게임개발자']},
+  {category:'스포츠',icon:'🏆',words:['축구','야구','복싱','농구','배드민턴','수영','양궁','볼링','스키','탁구']},
+  {category:'게임·캐릭터',icon:'🎮',words:['마인크래프트','포켓몬','슈퍼마리오','로블록스','젤다의 전설','동물의 숲','카트라이더','테트리스','브롤스타즈','쿠키런']},
+  {category:'일본 애니메이션',icon:'🎬',words:['귀멸의 칼날','원피스','나루토','스파이 패밀리','하이큐','주술회전','명탐정 코난','진격의 거인','나의 히어로 아카데미아','포켓몬스터']}
+];
+
+const $ = id => document.getElementById(id);
+let state = {players:[],liarIndex:0,word:'',category:null,roleIndex:0,firstSpeaker:0,voterIndex:0,votes:[],candidateIndexes:[],isRevote:false};
+function showScreen(id){document.querySelectorAll('.screen').forEach(screen=>screen.classList.toggle('active',screen.id===id));window.scrollTo(0,0)}
+function renderPlayerInputs(){const count=Number($('player-count').value);$('player-inputs').innerHTML=Array.from({length:count},(_,i)=>`<input id="player-${i}" maxlength="12" placeholder="플레이어 ${i+1} 이름">`).join('')}
+function randomItem(items){return items[Math.floor(Math.random()*items.length)]}
+function beginGame(keepPlayers=false){
+  if(!keepPlayers){const count=Number($('player-count').value);state.players=normalizePlayerNames(Array.from({length:count},(_,i)=>$(`player-${i}`).value))}
+  state.category=randomItem(WORD_BANK);state.word=randomItem(state.category.words);state.liarIndex=chooseLiarIndex(state.players.length);state.roleIndex=0;state.firstSpeaker=Math.floor(Math.random()*state.players.length);state.candidateIndexes=state.players.map((_,i)=>i);state.isRevote=false;prepareRole();showScreen('role-screen')
+}
+function prepareRole(){$('role-turn').textContent=`${state.players[state.roleIndex]} 차례`;$('role-cover').classList.remove('hidden');$('role-reveal').classList.add('hidden')}
+function revealRole(){const liar=state.roleIndex===state.liarIndex;const card=$('role-card');card.className=`role-card ${liar?'liar':'citizen'}`;card.innerHTML=liar?`🤥<br>당신은 라이어입니다<br><small>주제: ${state.category.icon} ${state.category.category}</small>`:`${state.category.icon}<br>제시어: ${state.word}<br><small>주제: ${state.category.category}</small>`;$('role-cover').classList.add('hidden');$('role-reveal').classList.remove('hidden')}
+function nextRole(){state.roleIndex++;if(state.roleIndex<state.players.length){prepareRole()}else{$('first-speaker').textContent=state.players[state.firstSpeaker];showScreen('discussion-screen')}}
+function beginVoting(candidateIndexes=state.players.map((_,i)=>i),isRevote=false){state.candidateIndexes=candidateIndexes;state.isRevote=isRevote;state.voterIndex=0;state.votes=[];prepareVotePass()}
+function prepareVotePass(){$('vote-pass-player').textContent=state.players[state.voterIndex];$('revote-notice').classList.toggle('hidden',!state.isRevote);showScreen('vote-pass-screen')}
+function openVote(){const voter=state.voterIndex;$('vote-title').textContent=`${state.players[voter]}님의 선택`;$('vote-options').innerHTML=state.candidateIndexes.filter(index=>index!==voter).map(index=>`<label class="candidate"><input type="radio" name="candidate" value="${index}"><span>${state.players[index]}</span></label>`).join('');showScreen('vote-screen')}
+function submitVote(){const chosen=document.querySelector('input[name="candidate"]:checked');if(!chosen){alert('투표할 사람을 선택해주세요.');return}state.votes.push(Number(chosen.value));state.voterIndex++;if(state.voterIndex<state.players.length)prepareVotePass();else finishVote()}
+function finishVote(){const outcome=getVoteOutcome(state.votes,state.candidateIndexes);if(outcome.type==='tie'){beginVoting(outcome.candidateIndexes,true);return}const selected=outcome.candidateIndex;if(selected===state.liarIndex){$('caught-liar').textContent=state.players[state.liarIndex];$('liar-guess').value='';showScreen('guess-screen')}else{showResult(false,`${state.players[selected]}님은 시민이었습니다. 라이어가 살아남았습니다.`)}}
+function submitGuess(){const guess=$('liar-guess').value.trim().replace(/\s+/g,'');if(!guess){alert('최종 추측을 입력해주세요.');return}const correct=guess===state.word.replace(/\s+/g,'');showResult(correct,correct?'라이어가 제시어를 정확히 맞혀 역전했습니다!':'라이어가 제시어를 맞히지 못했습니다.')}
+function showResult(liarWon,detail){$('result-title').className=`result ${liarWon?'bad':'good'}`;$('result-title').textContent=liarWon?'🤥 라이어 승리!':'🎉 시민 승리!';$('result-summary').innerHTML=`${detail}<br><br>주제: <strong>${state.category.icon} ${state.category.category}</strong><br>제시어: <strong>${state.word}</strong><br>라이어: <strong>${state.players[state.liarIndex]}</strong>`;showScreen('result-screen')}
+
+$('player-count').addEventListener('change',renderPlayerInputs);$('start-button').addEventListener('click',()=>beginGame(false));$('reveal-role').addEventListener('click',revealRole);$('role-next').addEventListener('click',nextRole);$('begin-vote').addEventListener('click',()=>beginVoting());$('open-vote').addEventListener('click',openVote);$('submit-vote').addEventListener('click',submitVote);$('submit-guess').addEventListener('click',submitGuess);$('liar-guess').addEventListener('keydown',e=>{if(e.key==='Enter')submitGuess()});$('restart-button').addEventListener('click',()=>beginGame(true));$('new-game-button').addEventListener('click',()=>{renderPlayerInputs();showScreen('setup-screen')});$('home-button').addEventListener('click',()=>location.href='../../index.html');renderPlayerInputs();
+</script>
+</body>
+</html>

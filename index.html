@@ -67,6 +67,264 @@
             font-weight: 400;
         }
 
+        /* AI 바이브 코딩 활동 기록 대표 영역 */
+        .featured-archive {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+            gap: 44px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto 72px;
+            padding: clamp(32px, 5vw, 58px);
+            overflow: hidden;
+            border: 1px solid rgba(0, 240, 255, 0.42);
+            border-radius: 28px;
+            background:
+                linear-gradient(135deg, rgba(18, 21, 48, 0.97), rgba(10, 11, 28, 0.98)),
+                var(--card-bg);
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48), 0 0 40px rgba(0, 240, 255, 0.08);
+        }
+
+        .featured-archive::before {
+            position: absolute;
+            inset: 0;
+            content: '';
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 12% 16%, rgba(0, 240, 255, 0.18), transparent 30%),
+                radial-gradient(circle at 88% 82%, rgba(255, 0, 85, 0.18), transparent 35%);
+        }
+
+        .archive-content, .archive-visual {
+            position: relative;
+            z-index: 1;
+        }
+
+        .archive-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            padding: 8px 12px;
+            border: 1px solid rgba(0, 240, 255, 0.28);
+            border-radius: 999px;
+            color: var(--neon-primary);
+            background: rgba(0, 240, 255, 0.07);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+        }
+
+        .archive-badge::before {
+            width: 7px;
+            height: 7px;
+            content: '';
+            border-radius: 50%;
+            background: var(--neon-primary);
+            box-shadow: 0 0 12px var(--neon-primary);
+        }
+
+        .featured-archive h2 {
+            max-width: 720px;
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: clamp(2.1rem, 5vw, 4.15rem);
+            font-weight: 900;
+            line-height: 1.16;
+            letter-spacing: -0.055em;
+            text-wrap: balance;
+        }
+
+        .featured-archive h2 span {
+            color: transparent;
+            background: linear-gradient(90deg, var(--neon-primary), #a8a5ff 52%, #ff5c9a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.18));
+        }
+
+        .archive-description {
+            max-width: 690px;
+            margin: 22px 0 0;
+            color: #c2c8df;
+            font-size: 1rem;
+            line-height: 1.8;
+            text-wrap: balance;
+        }
+
+        .archive-sessions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 28px 0;
+        }
+
+        .session-step {
+            display: grid;
+            min-width: 0;
+            padding: 13px 14px;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 11px;
+            border: 1px solid rgba(143, 163, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(7, 9, 23, 0.66);
+        }
+
+        .session-step strong {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            border: 1px solid rgba(0, 240, 255, 0.34);
+            border-radius: 9px;
+            color: var(--neon-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+        }
+
+        .session-step span {
+            min-width: 0;
+            color: #e5e8f5;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .archive-cta {
+            display: inline-flex;
+            min-height: 54px;
+            padding: 15px 23px;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border-radius: 10px;
+            color: #031015;
+            background: linear-gradient(135deg, var(--neon-primary), #8ba6ff);
+            box-shadow: 0 12px 34px rgba(0, 240, 255, 0.22);
+            font-size: 0.95rem;
+            font-weight: 900;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .archive-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 42px rgba(0, 240, 255, 0.34);
+        }
+
+        .archive-visual {
+            display: grid;
+            min-height: 390px;
+            place-items: center;
+        }
+
+        .archive-orbit {
+            position: absolute;
+            width: min(100%, 360px);
+            aspect-ratio: 1;
+            border: 1px solid rgba(0, 240, 255, 0.17);
+            border-radius: 50%;
+            animation: archive-spin 24s linear infinite;
+        }
+
+        .archive-orbit::before, .archive-orbit::after {
+            position: absolute;
+            width: 11px;
+            height: 11px;
+            content: '';
+            border-radius: 3px;
+            background: var(--neon-primary);
+            box-shadow: 0 0 18px var(--neon-primary);
+        }
+
+        .archive-orbit::before { top: 12%; left: 12%; }
+        .archive-orbit::after { right: 8%; bottom: 18%; background: var(--neon-secondary); box-shadow: 0 0 18px var(--neon-secondary); }
+
+        .archive-core {
+            position: relative;
+            display: grid;
+            width: min(72%, 250px);
+            aspect-ratio: 1;
+            place-items: center;
+            transform: rotate(45deg);
+            border: 1px solid rgba(159, 137, 255, 0.55);
+            background: linear-gradient(145deg, rgba(26, 31, 69, 0.94), rgba(12, 14, 34, 0.98));
+            box-shadow: 0 0 70px rgba(109, 97, 255, 0.22), inset 0 0 38px rgba(0, 240, 255, 0.08);
+        }
+
+        .archive-core-inner {
+            transform: rotate(-45deg);
+            text-align: center;
+        }
+
+        .archive-core-inner strong {
+            display: block;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 7vw, 4.8rem);
+            line-height: 1;
+            text-shadow: 0 0 24px var(--neon-primary);
+        }
+
+        .archive-core-inner span {
+            display: block;
+            margin-top: 8px;
+            color: var(--neon-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+        }
+
+        .archive-stat {
+            position: absolute;
+            padding: 10px 13px;
+            border: 1px solid rgba(143, 163, 255, 0.24);
+            border-radius: 10px;
+            color: #ccd1e7;
+            background: rgba(10, 12, 30, 0.9);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.66rem;
+            letter-spacing: 0.08em;
+        }
+
+        .archive-stat.top { top: 7%; right: 1%; }
+        .archive-stat.bottom { bottom: 5%; left: 0; color: #ff99bf; }
+
+        .arcade-section-heading {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto 4px;
+            padding: 0 20px;
+        }
+
+        .arcade-section-heading p:first-child {
+            margin: 0 0 7px;
+            color: var(--neon-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.14em;
+        }
+
+        .arcade-section-heading h2 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.7rem);
+        }
+
+        .arcade-section-heading .section-copy {
+            margin: 10px 0 0;
+            color: #888fa8;
+            line-height: 1.6;
+        }
+
+        @keyframes archive-spin { to { transform: rotate(360deg); } }
+
         /* 게임 리스트 컨테이너 */
         .game-container {
             display: grid;
@@ -178,6 +436,32 @@
         footer a:hover {
             color: var(--neon-primary);
         }
+
+        @media (max-width: 880px) {
+            header { margin-top: 44px; margin-bottom: 32px; }
+            .featured-archive { grid-template-columns: 1fr; gap: 24px; }
+            .archive-visual { min-height: 300px; }
+            .archive-orbit { width: min(75vw, 310px); }
+        }
+
+        @media (max-width: 560px) {
+            h1 { font-size: clamp(2rem, 11vw, 3rem); }
+            .subtitle { font-size: 0.9rem; }
+            .featured-archive { width: calc(100% - 24px); margin-bottom: 52px; padding: 26px 18px; border-radius: 20px; }
+            .featured-archive h2 { font-size: clamp(2rem, 10vw, 2.8rem); }
+            .archive-description { font-size: 0.9rem; }
+            .archive-sessions { grid-template-columns: 1fr; }
+            .archive-cta { width: 100%; padding-inline: 14px; font-size: 0.84rem; text-align: center; }
+            .archive-visual { min-height: 260px; }
+            .archive-stat.top { right: 0; }
+            .archive-stat.bottom { left: 0; }
+            .arcade-section-heading { width: calc(100% - 4px); padding: 0 20px; }
+            .game-container { width: 100%; grid-template-columns: 1fr; gap: 20px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
@@ -187,6 +471,40 @@
         <h1>VIVE Coding World</h1>
         <div class="subtitle">직접 제작한 웹 기반 미니게임 컬렉션</div>
     </header>
+
+    <section class="featured-archive" aria-labelledby="featuredArchiveTitle">
+        <div class="archive-content">
+            <p class="archive-badge">2026 AI VIBE CODING · ACTIVITY ARCHIVE</p>
+            <h2 id="featuredArchiveTitle" aria-label="AI 바이브 코딩 참가자들의 활동 기록 살펴보기">AI 바이브 코딩 참가자들의<br><span>활동 기록 살펴보기</span></h2>
+            <p class="archive-description">참가자들이 AI와 함께 아이디어를 기획하고, 게임을 제작하고, 오류를 해결하며, 완성작과 느낀 점을 나눈 4회기의 과정을 살펴보세요.</p>
+
+            <div class="archive-sessions" aria-label="AI 바이브 코딩 4회기 활동 과정">
+                <div class="session-step"><strong>01</strong><span>1회기 · 아이디어와 게임 기획</span></div>
+                <div class="session-step"><strong>02</strong><span>2회기 · AI를 활용한 제작</span></div>
+                <div class="session-step"><strong>03</strong><span>3회기 · 오류 수정과 문제 해결</span></div>
+                <div class="session-step"><strong>04</strong><span>4회기 · 완성작 공유와 활동 성찰</span></div>
+            </div>
+
+            <a class="archive-cta" href="games/memory_fragments/index.html">
+                AI 바이브 코딩 활동 기록 살펴보기 <span aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <div class="archive-visual" aria-hidden="true">
+            <div class="archive-orbit"></div>
+            <div class="archive-core">
+                <div class="archive-core-inner"><strong>4</strong><span>SESSIONS</span></div>
+            </div>
+            <span class="archive-stat top">MEMORY ARCHIVE</span>
+            <span class="archive-stat bottom">PARTICIPANT STORIES</span>
+        </div>
+    </section>
+
+    <section class="arcade-section-heading" aria-labelledby="arcadeTitle">
+        <p>PLAY THE PROJECTS</p>
+        <h2 id="arcadeTitle">참가자 제작 미니게임</h2>
+        <p class="section-copy">AI 바이브 코딩 활동에서 완성한 다양한 웹게임을 직접 플레이해 보세요.</p>
+    </section>
 
     <main class="game-container">
         <!-- 게임 카드 1: 마피아 게임 -->
@@ -309,16 +627,6 @@
                 <div class="game-desc">Space 또는 화면 클릭으로 새를 날려 파이프 사이를 통과하고 최고 기록에 도전하세요.</div>
             </div>
             <button class="play-btn">PLAY NOW</button>
-        </a>
-
-        <!-- 게임 카드 13: 코딩 월드 — 기억의 조각 -->
-        <a href="games/memory_fragments/index.html" class="game-card">
-            <div class="game-content">
-                <div class="game-icon">✨</div>
-                <div class="game-title">MEMORY FRAGMENTS</div>
-                <div class="game-desc">4회기의 아이디어와 고민, 성장의 순간을 네 개의 기억 구역에서 만나보세요.</div>
-            </div>
-            <button class="play-btn">EXPLORE NOW</button>
         </a>
 
         <!-- 나중에 게임을 추가하려면 위 <a> 태그 블록을 복사해서 경로와 내용을 수정하면 됩니다. -->

@@ -163,6 +163,22 @@ a:focus-visible, button:focus-visible {
   text-wrap: balance;
 }
 
+.archive-purpose {
+  display: inline-flex;
+  margin: 24px auto 0;
+  padding: 9px 14px;
+  border: 1px solid rgba(159, 107, 255, 0.36);
+  border-radius: 999px;
+  color: #e7ddff;
+  background: rgba(159, 107, 255, 0.09);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  box-shadow: 0 0 22px rgba(159, 107, 255, 0.08);
+}
+
+.archive-purpose + .intro-copy { margin-top: 16px; }
+
 .signal-mark {
   display: grid;
   width: 68px;
@@ -477,6 +493,7 @@ a:focus-visible, button:focus-visible {
   .zone-preview { margin-top: 26px; }
   .zone-preview span { flex: 1 1 calc(50% - 8px); min-width: 0; padding: 9px 7px; font-size: 0.69rem; }
   .consent-note { font-size: 0.69rem; }
+  .archive-purpose { width: 100%; justify-content: center; border-radius: 12px; font-size: 0.75rem; }
   .zone-map { grid-template-columns: 1fr; gap: 9px; margin-top: 26px; }
   .zone-button { min-height: 102px; padding: 18px 15px 14px; }
   .zone-stage { min-height: 350px; padding: 21px 15px; }

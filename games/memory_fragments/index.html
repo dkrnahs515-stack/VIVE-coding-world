@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="바이브 코딩 참가자들의 4회기 제작 경험을 기억의 조각으로 탐험하는 웹게임">
+  <title>코딩 월드 — 기억의 조각</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">본문으로 바로가기</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="home-link" href="../../index.html" aria-label="VIVE Coding World 메인 아케이드로 돌아가기">
+      <span aria-hidden="true">←</span> MAIN ARCADE
+    </a>
+    <p class="privacy-chip"><span aria-hidden="true">🛡️</span> 닉네임으로만 전하는 이야기</p>
+  </header>
+
+  <main id="mainContent" class="app-shell">
+    <section id="introView" class="view intro-view" aria-labelledby="introTitle">
+      <div class="signal-mark" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <p class="eyebrow">MEMORY ARCHIVE · 4 SESSIONS</p>
+      <h1 id="introTitle">코딩 월드<br><span>기억의 조각</span></h1>
+      <p class="intro-copy">아이디어가 게임이 되기까지, 참가자들이 마주한 즐거움과 고민을 네 개의 기억 구역에서 만나보세요.</p>
+
+      <div class="zone-preview" aria-label="탐험할 네 구역">
+        <span>💡 아이디어 광장</span>
+        <span>🛠️ 제작 공방</span>
+        <span>🧩 오류의 미로</span>
+        <span>🌠 공유의 별빛길</span>
+      </div>
+
+      <button id="startJourney" class="primary-button" type="button">
+        기억 탐험 시작 <span aria-hidden="true">→</span>
+      </button>
+      <p class="consent-note">참가자와 보호자의 동의를 받은 내용만 게시하며, 정확한 나이·성별·학교명은 공개하지 않습니다.</p>
+    </section>
+
+    <section id="explorerView" class="view explorer-view" aria-labelledby="explorerTitle" hidden>
+      <div class="explorer-heading">
+        <div>
+          <p class="eyebrow">MEMORY MAP</p>
+          <h1 id="explorerTitle">네 개의 기억 구역</h1>
+        </div>
+        <div class="progress-panel" aria-label="탐험 진행 상황">
+          <div><span>방문 구역</span><strong id="visitedCount">0 / 4</strong></div>
+          <div><span>읽은 조각</span><strong id="fragmentCount">0 / 0</strong></div>
+        </div>
+      </div>
+
+      <nav class="zone-map" aria-label="기억 구역 선택">
+        <button class="zone-button" type="button" data-zone="idea" aria-pressed="false">
+          <span class="zone-number">01</span><span class="zone-icon" aria-hidden="true">💡</span>
+          <span><strong>아이디어 광장</strong><small>처음 품었던 생각</small></span>
+          <i class="visit-mark" aria-hidden="true">미방문</i>
+        </button>
+        <button class="zone-button" type="button" data-zone="joy" aria-pressed="false">
+          <span class="zone-number">02</span><span class="zone-icon" aria-hidden="true">🛠️</span>
+          <span><strong>제작 공방</strong><small>완성의 즐거움</small></span>
+          <i class="visit-mark" aria-hidden="true">미방문</i>
+        </button>
+        <button class="zone-button" type="button" data-zone="challenge" aria-pressed="false">
+          <span class="zone-number">03</span><span class="zone-icon" aria-hidden="true">🧩</span>
+          <span><strong>오류의 미로</strong><small>고민과 문제 해결</small></span>
+          <i class="visit-mark" aria-hidden="true">미방문</i>
+        </button>
+        <button class="zone-button" type="button" data-zone="sharing" aria-pressed="false">
+          <span class="zone-number">04</span><span class="zone-icon" aria-hidden="true">🌠</span>
+          <span><strong>공유의 별빛길</strong><small>배움과 한마디</small></span>
+          <i class="visit-mark" aria-hidden="true">미방문</i>
+        </button>
+      </nav>
+
+      <section class="zone-stage" aria-labelledby="zoneTitle">
+        <div class="zone-stage-heading">
+          <div>
+            <p id="zoneEyebrow" class="eyebrow">ZONE 01</p>
+            <h2 id="zoneTitle">아이디어 광장</h2>
+          </div>
+          <p id="zoneQuestion" class="zone-question">어떤 게임이나 기능을 만들고 싶었나요?</p>
+        </div>
+
+        <div id="fragmentGrid" class="fragment-grid" aria-live="polite"></div>
+        <div id="emptyState" class="empty-state" role="status" hidden>
+          <span class="empty-orb" aria-hidden="true">✦</span>
+          <h3>아직 등록된 기억의 조각이 없습니다</h3>
+          <p><code>participants.js</code>에 닉네임과 회고 내용을 입력하면 이곳에 카드가 나타납니다.</p>
+        </div>
+      </section>
+
+      <div class="journey-controls">
+        <button id="previousZone" class="secondary-button" type="button"><span aria-hidden="true">←</span> 이전 구역</button>
+        <button id="finishJourney" class="primary-button compact" type="button" disabled>탐험 마치기</button>
+        <button id="nextZone" class="secondary-button" type="button">다음 구역 <span aria-hidden="true">→</span></button>
+      </div>
+      <p id="completionHint" class="completion-hint" aria-live="polite">네 구역을 모두 방문하면 탐험을 마칠 수 있어요.</p>
+    </section>
+
+    <section id="endingView" class="view ending-view" aria-labelledby="endingTitle" hidden>
+      <div class="ending-symbol" aria-hidden="true">✦</div>
+      <p class="eyebrow">MEMORY ARCHIVE COMPLETE</p>
+      <h1 id="endingTitle">당신도 새로운 조각을<br><span>만들 수 있어요</span></h1>
+      <p class="ending-copy">처음부터 완벽한 코드는 없습니다. 질문하고, 고치고, 다시 시도한 모든 순간이 나만의 게임을 만듭니다.</p>
+      <div id="endingMessages" class="ending-messages" aria-live="polite"></div>
+      <div class="ending-actions">
+        <button id="restartJourney" class="secondary-button" type="button">기억 다시 보기</button>
+        <a class="primary-button compact" href="../../index.html">참가자 게임 플레이하기</a>
+      </div>
+    </section>
+
+    <p id="loadError" class="load-error" role="alert" hidden>기억 데이터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.</p>
+  </main>
+
+  <dialog id="memoryDialog" class="memory-dialog" aria-labelledby="dialogTitle">
+    <div class="dialog-accent" id="dialogAccent" aria-hidden="true"></div>
+    <button id="closeDialog" class="dialog-close" type="button" aria-label="기억 카드 닫기">×</button>
+    <p id="dialogZone" class="eyebrow"></p>
+    <div class="dialog-person">
+      <span id="dialogEmoji" class="dialog-emoji" aria-hidden="true">✨</span>
+      <div><h2 id="dialogTitle"></h2><p id="dialogMeta"></p></div>
+    </div>
+    <div id="dialogAnswers" class="dialog-answers"></div>
+    <a id="dialogGameLink" class="game-link" href="#" target="_blank" rel="noopener" hidden>이 참가자의 게임 보기 <span aria-hidden="true">↗</span></a>
+  </dialog>
+
+  <script src="participants.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

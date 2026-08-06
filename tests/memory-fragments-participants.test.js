@@ -23,6 +23,21 @@ test('동의한 닉네임 4명의 활동 기록을 네 구역에서 공개한다
   assert.equal(api.getEndingMessages(normalized).length, 4);
 });
 
+test('참가자 4명에게 프로젝트 내부 픽셀 아바타를 연결한다', () => {
+  assert.deepEqual(
+    Array.from(participants, (participant) => participant.avatar),
+    [
+      'assets/avatars/skull-detective.png',
+      'assets/avatars/melon-bread-maker.png',
+      'assets/avatars/frozen-chick-warrior.png',
+      'assets/avatars/penguin-tech-maker.png'
+    ]
+  );
+  participants.forEach((participant) => {
+    assert.equal(Object.hasOwn(participant, 'gameUrl'), false);
+  });
+});
+
 test('공개 참가자 데이터에 성별과 학교 정보를 저장하지 않는다', () => {
   const serialized = JSON.stringify(participants);
 

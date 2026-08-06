@@ -25,11 +25,11 @@ test('답변이 있는 참가자만 해당 구역 조각으로 만든다', () =>
   );
 });
 
-test('외부 링크는 https만 허용하고 색상은 안전한 기본값으로 대체한다', () => {
-  assert.equal(api.sanitizeUrl('javascript:alert(1)'), '');
-  assert.equal(api.sanitizeUrl('http://example.com/game'), '');
-  assert.equal(api.sanitizeUrl('https://example.com/game'), 'https://example.com/game');
-  assert.equal(api.sanitizeUrl('../snake/index.html'), '../snake/index.html');
+test('프로젝트 내부 아바타 경로만 허용하고 색상은 안전한 기본값으로 대체한다', () => {
+  assert.equal(api.normalizeAvatarPath('https://example.com/avatar.png'), '');
+  assert.equal(api.normalizeAvatarPath('../avatar.png'), '');
+  assert.equal(api.normalizeAvatarPath('assets/avatars/person.jpg'), '');
+  assert.equal(api.normalizeAvatarPath('assets/avatars/pixel-maker.png'), 'assets/avatars/pixel-maker.png');
   assert.equal(api.normalizeColor('red'), '#00f0ff');
   assert.equal(api.normalizeColor('#ff0055'), '#ff0055');
 });

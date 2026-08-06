@@ -6,7 +6,7 @@
     'nickname',
     'schoolLevel',
     'gameTitle',
-    'gameUrl',
+    'avatar',
     'emoji',
     'color',
     'idea',
@@ -61,15 +61,43 @@
     return typeof value === 'string' ? value.trim() : '';
   }
 
-  function sanitizeUrl(value) {
-    const url = cleanText(value);
-    if (/^https:\/\//i.test(url) || /^(?:\.\/|\.\.\/)/.test(url)) return url;
-    return '';
+  function normalizeAvatarPath(value) {
+    const path = cleanText(value);
+    return /^assets\/avatars\/[a-z0-9-]+\.png$/.test(path) ? path : '';
   }
 
   function normalizeColor(value) {
     const color = cleanText(value).toLowerCase();
     return /^#[0-9a-f]{6}$/.test(color) ? color : DEFAULT_COLOR;
+  }
+
+  function createAvatar(document, participant, className) {
+    const source = participant && typeof participant === 'object' ? participant : {};
+    const wrapper = document.createElement('span');
+    wrapper.className = `participant-avatar ${cleanText(className)}`.trim();
+    wrapper.setAttribute('aria-hidden', 'true');
+
+    const fallback = document.createElement('span');
+    fallback.className = 'participant-avatar-fallback';
+    fallback.textContent = cleanText(source.emoji) || '✨';
+
+    const avatar = normalizeAvatarPath(source.avatar);
+    if (!avatar) {
+      wrapper.append(fallback);
+      return wrapper;
+    }
+
+    const image = document.createElement('img');
+    image.src = avatar;
+    image.alt = '';
+    image.decoding = 'async';
+    fallback.hidden = true;
+    image.addEventListener('error', () => {
+      image.hidden = true;
+      fallback.hidden = false;
+    });
+    wrapper.append(image, fallback);
+    return wrapper;
   }
 
   function normalizeParticipant(participant) {
@@ -78,7 +106,7 @@
     PARTICIPANT_FIELDS.forEach((field) => {
       normalized[field] = cleanText(source[field]);
     });
-    normalized.gameUrl = sanitizeUrl(normalized.gameUrl);
+    normalized.avatar = normalizeAvatarPath(normalized.avatar);
     normalized.color = normalizeColor(normalized.color);
     return normalized;
   }
@@ -109,6 +137,7 @@
       .filter((participant) => cleanText(participant.message))
       .map((participant) => ({
         nickname: participant.nickname,
+        avatar: participant.avatar,
         emoji: participant.emoji || '✨',
         color: normalizeColor(participant.color),
         message: participant.message
@@ -153,8 +182,9 @@
     getZoneEntries,
     buildFragments,
     getEndingMessages,
-    sanitizeUrl,
+    normalizeAvatarPath,
     normalizeColor,
+    createAvatar,
     createProgress,
     visitZone,
     collectFragment,
@@ -190,11 +220,10 @@
       dialog: document.getElementById('memoryDialog'),
       dialogAccent: document.getElementById('dialogAccent'),
       dialogZone: document.getElementById('dialogZone'),
-      dialogEmoji: document.getElementById('dialogEmoji'),
+      dialogAvatarSlot: document.getElementById('dialogAvatarSlot'),
       dialogTitle: document.getElementById('dialogTitle'),
       dialogMeta: document.getElementById('dialogMeta'),
       dialogAnswers: document.getElementById('dialogAnswers'),
-      dialogGameLink: document.getElementById('dialogGameLink'),
       closeDialog: document.getElementById('closeDialog')
     };
 
@@ -256,9 +285,7 @@
       button.style.setProperty('--fragment-color', participant.color);
       button.setAttribute('aria-label', `${participant.nickname}의 기억 조각 읽기`);
 
-      const emoji = document.createElement('span');
-      emoji.className = 'fragment-card-emoji';
-      emoji.textContent = participant.emoji || '✨';
+      const avatar = createAvatar(document, participant, 'fragment-card-avatar');
       const name = document.createElement('strong');
       name.textContent = participant.nickname;
       const meta = document.createElement('span');
@@ -266,7 +293,7 @@
       const state = document.createElement('small');
       state.textContent = collected ? '읽은 조각 · 다시 보기' : '기억 조각 열기 →';
 
-      button.append(emoji, name, meta, state);
+      button.append(avatar, name, meta, state);
       button.addEventListener('click', () => openFragment(fragment, button));
       return button;
     }
@@ -318,14 +345,12 @@
       elements.dialog.style.setProperty('--dialog-color', participant.color);
       elements.dialogAccent.style.background = participant.color;
       elements.dialogZone.textContent = zone.title;
-      elements.dialogEmoji.textContent = participant.emoji || '✨';
+      elements.dialogAvatarSlot.replaceChildren(createAvatar(document, participant, 'dialog-avatar'));
       elements.dialogTitle.textContent = participant.nickname;
       elements.dialogMeta.textContent = [participant.schoolLevel, participant.gameTitle].filter(Boolean).join(' · ') || '바이브 코딩 참가자';
       elements.dialogAnswers.replaceChildren();
       zone.answers.forEach(([label, field]) => addAnswer(label, participant[field]));
 
-      elements.dialogGameLink.hidden = !participant.gameUrl;
-      if (participant.gameUrl) elements.dialogGameLink.href = participant.gameUrl;
       elements.dialog.showModal();
       elements.closeDialog.focus();
     }
@@ -350,11 +375,14 @@
         const card = document.createElement('article');
         card.className = 'ending-message';
         card.style.setProperty('--message-color', message.color);
+        const identity = document.createElement('div');
+        identity.className = 'ending-message-identity';
         const author = document.createElement('strong');
-        author.textContent = `${message.emoji} ${message.nickname}`;
+        author.textContent = message.nickname;
         const copy = document.createElement('p');
         copy.textContent = message.message;
-        card.append(author, copy);
+        identity.append(createAvatar(document, message, 'ending-avatar'), author);
+        card.append(identity, copy);
         elements.endingMessages.appendChild(card);
       });
     }

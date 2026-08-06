@@ -402,7 +402,19 @@ a:focus-visible, button:focus-visible {
 
 .fragment-card:hover { transform: translateY(-4px); box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3); }
 .fragment-card.is-collected { box-shadow: inset 0 0 0 1px var(--fragment-color); }
-.fragment-card-emoji { display: block; margin-bottom: 24px; font-size: 2rem; }
+.participant-avatar {
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--fragment-color, var(--dialog-color, var(--message-color, var(--cyan)))) 55%, transparent);
+  border-radius: 14px;
+  background: #080b1c;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--fragment-color, var(--dialog-color, var(--message-color, var(--cyan)))) 18%, transparent);
+}
+.participant-avatar img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.participant-avatar-fallback { display: grid; width: 100%; height: 100%; place-items: center; font-size: 2rem; }
+.participant-avatar-fallback[hidden] { display: none; }
+.fragment-card-avatar { width: 72px; height: 72px; margin-bottom: 18px; }
 .fragment-card strong { display: block; font-size: 1rem; }
 .fragment-card span { display: block; margin-top: 5px; color: var(--muted); font-size: 0.75rem; }
 .fragment-card small { display: block; margin-top: 16px; color: var(--fragment-color); font-weight: 700; }
@@ -443,7 +455,9 @@ a:focus-visible, button:focus-visible {
 .ending-view h1 { font-size: clamp(2.25rem, 7vw, 5.3rem); }
 .ending-messages { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 34px 0 28px; }
 .ending-message { padding: 20px; border: 1px solid color-mix(in srgb, var(--message-color) 40%, transparent); border-radius: 14px; background: var(--panel); text-align: left; }
-.ending-message strong { color: var(--message-color); }
+.ending-message-identity { display: flex; align-items: center; gap: 12px; }
+.ending-avatar { width: 48px; height: 48px; flex: 0 0 auto; border-radius: 12px; }
+.ending-message strong { min-width: 0; overflow-wrap: anywhere; color: var(--message-color); }
 .ending-message p { margin: 8px 0 0; color: #d4d8e8; line-height: 1.65; }
 .ending-empty { grid-column: 1 / -1; padding: 22px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); }
 .ending-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
@@ -465,14 +479,14 @@ a:focus-visible, button:focus-visible {
 .dialog-close { position: absolute; top: 14px; right: 14px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--text); background: #171a34; font-size: 1.5rem; cursor: pointer; }
 .memory-dialog > .eyebrow { padding: 34px 30px 0; }
 .dialog-person { display: flex; padding: 6px 30px 24px; align-items: center; gap: 16px; border-bottom: 1px solid var(--line); }
-.dialog-emoji { display: grid; width: 62px; height: 62px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 14px; background: #0b0d1d; font-size: 2rem; }
+.dialog-avatar-slot { display: contents; }
+.dialog-avatar { width: 80px; height: 80px; flex: 0 0 auto; border-radius: 16px; }
 .dialog-person h2 { margin: 0; font: 900 1.5rem "Orbitron", sans-serif; }
 .dialog-person p { margin: 5px 0 0; color: var(--muted); font-size: 0.8rem; }
 .dialog-answers { display: grid; gap: 11px; padding: 24px 30px; }
 .dialog-answer { padding: 15px; border: 1px solid var(--line); border-radius: 11px; background: #0b0d1d; }
 .dialog-answer strong { display: block; margin-bottom: 7px; color: var(--dialog-color, var(--cyan)); font-size: 0.8rem; }
 .dialog-answer p { margin: 0; color: #d8dced; line-height: 1.7; white-space: pre-wrap; }
-.game-link { margin: 0 30px 30px; padding: 12px 18px; border: 1px solid var(--dialog-color, var(--cyan)); color: var(--dialog-color, var(--cyan)); }
 .load-error { padding: 16px; border: 1px solid var(--pink); border-radius: 10px; color: #ffd3e5; background: rgba(255, 61, 141, 0.1); text-align: center; }
 
 @media (max-width: 900px) {
@@ -503,7 +517,8 @@ a:focus-visible, button:focus-visible {
   .journey-controls .primary-button { grid-column: 1 / -1; grid-row: 2; width: 100%; }
   .dialog-person, .dialog-answers { padding-left: 20px; padding-right: 20px; }
   .memory-dialog > .eyebrow { padding-left: 20px; }
-  .game-link { margin-left: 20px; margin-right: 20px; }
+  .fragment-card-avatar { width: 64px; height: 64px; }
+  .dialog-avatar { width: 70px; height: 70px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

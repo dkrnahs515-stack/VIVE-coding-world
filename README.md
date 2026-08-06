@@ -25,6 +25,7 @@ HTML, CSS, JavaScript로 제작된 게임을 한곳에서 선택해 플레이할
 | 💣 **MINESWEEPER** | 퍼즐·추리 | 숫자 단서를 분석해 지뢰를 피하고 안전한 칸을 모두 찾는 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/minesweeper/) |
 | 🔢 **2048** | 숫자·퍼즐 | 같은 숫자 타일을 밀어서 합치고 더 높은 숫자에 도전하는 퍼즐 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/2048/) |
 | 🐤 **FLAPPY BIRD** | 캐주얼·액션 | Space 또는 화면 클릭으로 새를 날려 파이프를 통과하는 기록 도전 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/flappy_bird/) |
+| 👥 **STICKMAN COUNT RUSH** | 2.5D·무한 러닝 | 관문을 선택해 스틱맨 군단을 늘리고 적 군단과 거대 보스를 돌파하는 기록 도전 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/stickman_count_rush/) |
 | ✨ **MEMORY FRAGMENTS** | 탐험·스토리 | 참가자들의 4회기 아이디어, 제작 경험, 고민과 성장을 네 구역에서 읽는 기억 탐험 게임 | [플레이](https://dkrnahs515-stack.github.io/VIVE-coding-world/games/memory_fragments/) |
 | 🏃 **VIBE ESCAPE** | 액션·대탈출 | 캐릭터를 선택하고 50개 스테이지와 보스를 돌파하는 게임 | [플레이](https://dkrnahs515-stack.github.io/gsyouth-exit-/) |
 
@@ -37,6 +38,7 @@ HTML, CSS, JavaScript로 제작된 게임을 한곳에서 선택해 플레이할
 - 별도 설치 없이 웹 브라우저에서 실행
 - 각 게임의 다시 시작 및 게임 종료 기능
 - 키보드·마우스·터치 조작 지원
+- STICKMAN COUNT RUSH의 마우스·터치 드래그 전용 군단 이동
 - GitHub Pages를 이용한 웹 배포
 - 참가자 회고를 닉네임 기반 기억 카드로 소개하는 4구역 탐험
 - 홈페이지 최상단에서 4회기 AI 바이브 코딩 활동 과정과 참가자 기록을 우선 소개
@@ -70,6 +72,13 @@ VIVE-coding-world/
    │  └─ index.html
    ├─ flappy_bird/
    │  └─ index.html
+   ├─ stickman_count_rush/
+   │  ├─ index.html
+   │  ├─ style.css
+   │  ├─ game-core.js
+   │  ├─ renderer.js
+   │  ├─ input.js
+   │  └─ game.js
    └─ memory_fragments/
       ├─ index.html
       ├─ style.css

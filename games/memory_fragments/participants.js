@@ -8,17 +8,59 @@
  */
 window.MEMORY_FRAGMENT_PARTICIPANTS = [
   {
-    nickname: '',
+    nickname: '닠네임💀',
     schoolLevel: '',
-    gameTitle: '',
+    gameTitle: '마피아 게임',
     gameUrl: '',
-    emoji: '',
-    color: '',
-    idea: '',
-    joy: '',
-    challenge: '',
-    solution: '',
+    emoji: '🕵️',
+    color: '#ff4d8d',
+    idea: '방탈출 게임과 RPG 게임을 만들고 싶었다.',
+    joy: '마피아 게임을 만들었는데 경찰의 조사 기능을 여러 번 사용할 수 있다는 것을 뒤늦게 알았다. 덕분에 마피아의 정체를 계속 확인할 수 있어서 재미있었다.',
+    challenge: 'AI에게 원하는 내용을 정확하게 명령하는 것이 어려웠고, 원하는 결과가 계속 나오지 않았다.',
+    solution: '명령을 바꾸어 여러 번 입력해 보았지만 원하는 결과를 얻기는 어려웠다.',
+    learning: '게임을 만드는 활동이 재미있다는 것을 느꼈다.',
+    message: '재밌어... 다~~~ 이상.'
+  },
+  {
+    nickname: '멜론빵맨🍈🍞',
+    schoolLevel: '',
+    gameTitle: '라이어 게임',
+    gameUrl: '',
+    emoji: '🧠',
+    color: '#9dff57',
+    idea: '라이어 게임을 만들고 싶었다.',
+    joy: '라이어 게임을 만드는 과정이 재미있었다. AI에게 명령을 입력한 내용이 실제로 작동하는 것이 신기하고 재미있었다.',
+    challenge: '방탈출 게임을 만들고 싶었지만 생각했던 모습과 전혀 다른 결과물이 나와서 힘들었다.',
+    solution: '어떻게 명령해야 원하는 결과가 나올지 계속 생각하며 명령을 바꾸어 반복해서 입력했다.',
+    learning: 'AI를 활용해서 게임을 만드는 방법을 배웠다.',
+    message: '재미있었다!!! 이상!!!!!! 네!'
+  },
+  {
+    nickname: '냉동병아리🦟',
+    schoolLevel: '',
+    gameTitle: '역사 인물 격투 게임',
+    gameUrl: '',
+    emoji: '⚔️',
+    color: '#ffd166',
+    idea: '미니미니메추리가 계속 자라나는 게임을 만들고 싶었다.',
+    joy: '수업 시간 자체가 재미있었다. 궁예, 견훤, 세종대왕, 티니핑, 제갈공명, 유비 등 여러 인물을 바탕으로 철권 격투 게임을 만들었는데 막대기만 나와서 웃겼다.',
+    challenge: '어려운 문제를 직접 해결하는 과정까지는 해보지 못했다.',
+    solution: '선생님의 도움을 많이 받아 게임 제작을 진행했다.',
     learning: '',
-    message: ''
+    message: '공부 열심히 해서~ 망하지 말고~ 잘 만들고~ 미니미니메추리가 자라는 게임을 만들어줘~~~~🐔'
+  },
+  {
+    nickname: '미니미니메추리🐧',
+    schoolLevel: '',
+    gameTitle: '보컬로이드·FPS 게임',
+    gameUrl: '',
+    emoji: '🌐',
+    color: '#7b8cff',
+    idea: '보컬로이드 게임과 FPS 게임을 만들고 싶었다.',
+    joy: '제미나이와 챗GPT를 모두 사용해 보았는데, 제미나이에서 결과가 더 잘 나온 것이 인상 깊었다.',
+    challenge: 'Firebase로 온라인 서버를 만드는 과정이 잘 이해되지 않아 어려웠다.',
+    solution: '선생님의 도움을 받아 Firebase 연동에 성공했다.',
+    learning: '온라인 서버를 연결하는 과정이 쉽지 않다는 것을 알게 되었다.',
+    message: '음......... 어..렵다.....네......'
   }
 ];

@@ -33,3 +33,18 @@ test('기억의 조각 시작 화면이 AI 바이브 코딩 활동 기록임을 
   assert.match(html, /AI 바이브 코딩 참가자들의 활동 기록 살펴보기/);
   assert.match(html, /기획.*AI.*오류.*공유/s);
 });
+
+test('참가자 기억 카드에 개별 게임 바로가기를 제공하지 않는다', () => {
+  const html = fs.readFileSync(path.join(root, 'games/memory_fragments/index.html'), 'utf8');
+  const main = fs.readFileSync(path.join(root, 'games/memory_fragments/main.js'), 'utf8');
+  const participants = fs.readFileSync(path.join(root, 'games/memory_fragments/participants.js'), 'utf8');
+  const source = `${html}\n${main}\n${participants}`;
+
+  assert.doesNotMatch(source, /dialogGameLink|이 참가자의 게임 보기|gameUrl/);
+});
+
+test('기억 카드 상세창에 참가자 아바타 슬롯을 제공한다', () => {
+  const html = fs.readFileSync(path.join(root, 'games/memory_fragments/index.html'), 'utf8');
+  assert.match(html, /id="dialogAvatarSlot"/);
+  assert.doesNotMatch(html, /id="dialogEmoji"/);
+});

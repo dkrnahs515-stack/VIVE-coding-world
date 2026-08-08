@@ -12,7 +12,7 @@ test('활동 기록 대표 영역이 게임 목록보다 먼저 나오고 링크
   assert.ok(html.indexOf('class="featured-archive"') < html.indexOf('class="game-container"'));
   assert.equal((html.match(/games\/memory_fragments\/index\.html/g) || []).length, 1);
   assert.match(html, /AI 바이브 코딩 참가자들의 활동 기록 살펴보기/);
-  assert.equal((html.match(/class="game-card(?: secondary)?"/g) || []).length, 12);
+  assert.equal((html.match(/class="game-card(?: secondary)?"/g) || []).length, 13);
   for (const session of ['1회기', '2회기', '3회기', '4회기']) assert.match(html, new RegExp(session));
 });
 
